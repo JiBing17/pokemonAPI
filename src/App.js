@@ -11,6 +11,9 @@ function App() {
     const fetchedData = async () => {
       try {
         const response = await axios.get(BASE_URL);
+        console.log("res: " , response)
+        console.log("res++: " ,response.data)
+
         setPokemonData(response.data)
       } catch (error) {
           setError(error);
@@ -27,11 +30,11 @@ function App() {
     return <div>Loading...</div>
   }
   return (
-    <div>
-        <h1>PokeAPI Data</h1>
-        <pre>{JSON.stringify(pokemonData, null, 2)}</pre>
+    <div className="container mx-auto">
+      <h1 className="text-4xl font-bold mb-4">PokeAPI Data</h1>
+      <pre className="bg-gray-200 p-4 rounded-lg">{JSON.stringify(pokemonData, null, 2)}</pre>
     </div>
-  )
+  );
 }
 
 export default App;
