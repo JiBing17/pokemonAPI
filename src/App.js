@@ -4,26 +4,23 @@ import axios from "axios";
 const BASE_URL = "https://pokeapi.co/api/v2"; // Base URL for the PokeAPI
 const POKEMON_URL = BASE_URL + "/pokemon"; // Endpoint for fetching Pokemon data
 
-
 function App() {
-  // State variables to store Pokemon data, images, error, current page number, and total pages
+    // State variables to store relevent data
   const [pokemonData, setPokemonData] = useState([]);
   const [pokemonImages, setPokemonImages] = useState({});
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredPokemonData, setFilteredPokemonData] = useState([]);
 
   // Fetch Pokemon data from the API based on the current page
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch data with pagination parameters
-        const response = await axios.get(`${POKEMON_URL}?offset=${(currentPage - 1) * 20}&limit=20`);
-        // Update Pokemon data and calculate total pages
+        const response = await axios.get(`${POKEMON_URL}?offset=${(currentPage - 1) * 49}&limit=49`);
         setPokemonData(response.data.results);
-        setTotalPages(Math.ceil(response.data.count / 20));
-
-        // error handling
+        setTotalPages(Math.ceil(response.data.count / 50));
       } catch (error) {
         setError(error);
       }
@@ -38,7 +35,6 @@ function App() {
       const response = await axios.get(url);
       return response.data.sprites.front_default;
     } catch (error) {
-      // Handle errors fetching images
       console.error("Error fetching Pokemon image:", error);
       return null;
     }
@@ -48,17 +44,25 @@ function App() {
   useEffect(() => {
     const fetchPokemonImages = async () => {
       const images = {};
-      // Iterate through each Pokemon and fetch its image
       for (const pokemon of pokemonData) {
         const imageUrl = await getPokemonImage(pokemon.url);
         images[pokemon.name] = imageUrl;
       }
-      // Update Pokemon images
       setPokemonImages(images);
     };
 
     fetchPokemonImages();
   }, [pokemonData]);
+
+  // Update pokemon data when data / search bar changes
+  useEffect(() => {
+    setFilteredPokemonData(
+      pokemonData.filter(
+        (pokemon) =>
+          pokemon.name.toLowerCase().startsWith(searchQuery.toLowerCase())
+      )
+    );
+  }, [pokemonData, searchQuery]);
 
   // Handlers for navigating pages
   const handlePrevPage = () => {
@@ -66,6 +70,11 @@ function App() {
   };
   const handleNextPage = () => {
     setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages));
+  };
+
+  // Handlers for search bar change
+  const handleSearchInputChange = (event) => {
+    setSearchQuery(event.target.value);
   };
 
   // Render error message if there's an error
@@ -76,31 +85,45 @@ function App() {
   if (!pokemonData.length) {
     return <div>Loading...</div>;
   }
-
   // Render the Pokemon data, images, and pagination controls
   return (
-    <div className="container mx-auto">
-      <h1 className="text-4xl font-bold mb-4 fixed top-0 left-0 right-0 z-10">PokeAPI Data</h1>
-      <div className="flex flex-wrap gap-4">
+    <div className="container mx-auto flex flex-col items-center">
+      <div className="flex items-center justify-center w-full mb-4">
+        <h1 className="text-4xl font-bold px-4 py-4">PokeAPI Data</h1>
+        <div className="flex items-center px-4 py-4">
+          <input
+            type="text"
+            placeholder="Search Pokémon..."
+            value={searchQuery}
+            onChange={handleSearchInputChange}
+            className="px-4 py-2 border border-gray-300 rounded-md mr-2"
+          />
+        </div>
+      </div>
+      <div className="flex flex-wrap gap-4 justify-center">
         {/* Render each Pokemon as a card */}
-        {pokemonData.map((pokemon, index) => (
-          <div key={index} className="bg-gray-200 p-4 rounded-lg mb-4">
-            <h2 className="text-xl font-bold">{pokemon.name}</h2>
+        {filteredPokemonData.map((pokemon, index) => (
+          <div key={index} className="bg-gray-200 p-6 rounded-lg mb-6 flex flex-col items-center">
+            <h2 className="text-xl font-bold text-center mb-2">{pokemon.name}</h2>
             {/* Render Pokemon image if available */}
             {pokemonImages[pokemon.name] && (
               <img
                 src={pokemonImages[pokemon.name]}
                 alt={`Image of ${pokemon.name}`}
-                className="mt-2"
+                className="mt-2 w-32 h-32 object-contain"
               />
             )}
           </div>
         ))}
       </div>
       {/* Pagination controls */}
-      <div className="flex justify-between mt-4">
-        <button onClick={handlePrevPage} disabled={currentPage === 1}>Previous</button>
-        <button onClick={handleNextPage} disabled={currentPage === totalPages}>Next</button>
+      <div className="flex justify-center mt-4 space-x-8">
+        <button onClick={handlePrevPage} disabled={currentPage === 1} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg">
+          Previous
+        </button>
+        <button onClick={handleNextPage} disabled={currentPage === totalPages} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg">
+          Next
+        </button>
       </div>
     </div>
   );
