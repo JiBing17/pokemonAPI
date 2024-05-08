@@ -5,7 +5,7 @@ const BASE_URL = "https://pokeapi.co/api/v2"; // Base URL for the PokeAPI
 const POKEMON_URL = BASE_URL + "/pokemon"; // Endpoint for fetching Pokemon data
 
 function App() {
-    // State variables to store relevent data
+    // State variables to store relevant data
   const [pokemonData, setPokemonData] = useState([]);
   const [pokemonImages, setPokemonImages] = useState({});
   const [error, setError] = useState(null);
@@ -18,7 +18,7 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${POKEMON_URL}?offset=${(currentPage - 1) * 49}&limit=49`);
+        const response = await axios.get(`${POKEMON_URL}?offset=${(currentPage - 1) * 48}&limit=48`);
         setPokemonData(response.data.results);
         setTotalPages(Math.ceil(response.data.count / 50));
       } catch (error) {
@@ -67,9 +67,11 @@ function App() {
   // Handlers for navigating pages
   const handlePrevPage = () => {
     setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
+    setSearchQuery("");
   };
   const handleNextPage = () => {
     setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages));
+    setSearchQuery("");
   };
 
   // Handlers for search bar change
@@ -87,23 +89,23 @@ function App() {
   }
   // Render the Pokemon data, images, and pagination controls
   return (
-    <div className="container mx-auto flex flex-col items-center">
+    <div className="container mx-auto px-4">
       <div className="flex items-center justify-center w-full mb-4">
-        <h1 className="text-4xl font-bold px-4 py-4">PokeAPI Data</h1>
-        <div className="flex items-center px-4 py-4">
+        <h1 className="text-4xl font-bold py-4 text-center md:text-left md:ml-4 md:py-0 md:w-auto md:mr-auto">PokeAPI Data</h1>
+        <div className="flex items-center">
           <input
             type="text"
             placeholder="Search Pokémon..."
             value={searchQuery}
             onChange={handleSearchInputChange}
-            className="px-4 py-2 border border-gray-300 rounded-md mr-2"
+            className="px-4 py-2 border border-gray-300 rounded-md mr-2 w-full md:w-64"
           />
         </div>
       </div>
-      <div className="flex flex-wrap gap-4 justify-center">
+      <div className="flex flex-wrap justify-center">
         {/* Render each Pokemon as a card */}
         {filteredPokemonData.map((pokemon, index) => (
-          <div key={index} className="bg-gray-200 p-6 rounded-lg mb-6 flex flex-col items-center">
+          <div key={index} className="bg-gray-200 p-6 rounded-lg mb-6 flex flex-col items-center w-72 md:w-96 mr-4 md:mb-4">
             <h2 className="text-xl font-bold text-center mb-2">{pokemon.name}</h2>
             {/* Render Pokemon image if available */}
             {pokemonImages[pokemon.name] && (
@@ -127,6 +129,7 @@ function App() {
       </div>
     </div>
   );
+  
 }
 
 export default App;
