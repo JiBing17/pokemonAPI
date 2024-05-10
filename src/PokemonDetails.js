@@ -39,7 +39,7 @@ function PokemonDetails() {
   const { name, sprites, height, weight, base_experience } = pokemonDetails;
 
   return (
-    <div className="container mx-auto px-4">
+    <div className="container mx-auto px-4 pt-20">
       <div className="flex items-center justify-center w-full mb-4">
         <h1 className="text-4xl font-bold py-4 text-center md:text-left md:ml-4 md:py-0 md:w-auto md:mr-auto">{name.toUpperCase()} Details</h1>
       </div>
