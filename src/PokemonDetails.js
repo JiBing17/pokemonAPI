@@ -3,21 +3,28 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 
 function PokemonDetails() {
-  // Access URL parameters using useParams
-  const { pokemonName } = useParams();
-  
-  // State variables for storing Pokemon details, loading status, and error
+  const { pokemonName } = useParams(); // Access URL parameters using useParams
   const [pokemonDetails, setPokemonDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [evolutionChain, setEvolutionChain] = useState([]);
 
   useEffect(() => {
-    // Fetch Pokemon details from the API
+    // Fetch Pokemon details and evolution chain from the API
     const fetchPokemonDetails = async () => {
       try {
         setLoading(true);
         const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`);
         setPokemonDetails(response.data);
+
+        // Fetch evolution chain data
+        const speciesUrl = response.data.species.url;
+        const speciesResponse = await axios.get(speciesUrl);
+        const evolutionChainUrl = speciesResponse.data.evolution_chain.url;
+        const evolutionChainResponse = await axios.get(evolutionChainUrl);
+        console.log(evolutionChainResponse.data)
+        setEvolutionChain(parseEvolutionChain(evolutionChainResponse.data));
+
         setLoading(false);
       } catch (error) {
         setError(error);
@@ -28,56 +35,70 @@ function PokemonDetails() {
     fetchPokemonDetails();
   }, [pokemonName]);
 
-  // Display loading message while fetching data
+  // Function to parse evolution chain data
+  const parseEvolutionChain = (chain) => {
+    const stages = [];
+    let currentStage = chain.chain;
+
+    // Traverse the evolution chain and store object with name / pic
+    while (currentStage) {
+      stages.push({
+        name: currentStage.species.name,
+        sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${currentStage.species.url.split("/")[6]}.png`,
+      });
+
+      currentStage = currentStage.evolves_to[0];
+    }
+
+    return stages;
+  };
+
+  // Render loading message if data is still loading
   if (loading) {
     return <div>Loading...</div>;
   }
-
-  // Display error message if an error occurs during data fetching
+  // Render error message if there's an error
   if (error) {
     return <div>Error: {error.message}</div>;
   }
-
-  // Display message if Pokemon details are not found
+  // Render not found message if no pokemon details were found
   if (!pokemonDetails) {
     return <div>Pokemon details not found.</div>;
   }
 
-  // Extract specific stats from the Pokemon details
-  const stats = pokemonDetails.stats.reduce((acc, stat) => {
-    if (stat.stat.name === "special-defense") {
-      acc["Special Defense"] = stat.base_stat;
-    } else if (stat.stat.name === "special-attack") {
-      acc["Special Attack"] = stat.base_stat;
-    } else {
-      acc[stat.stat.name] = stat.base_stat;
-    }
-    return acc;
-  }, {});
-
-  const { name, sprites } = pokemonDetails;
-
+  // destructure pokemon detail object
+  const { name, sprites, stats } = pokemonDetails;
+  console.log(stats)
   return (
     <div className="container mx-auto px-4 pt-20">
-      <div className="flex items-center justify-center w-full mb-4">
-        <h1 className="text-4xl font-bold py-4 text-center md:text-left md:ml-4 md:py-0 md:w-auto md:mr-auto">{name.toUpperCase()} Details</h1>
-      </div>
       <div className="flex justify-center">
         <div className="bg-gray-200 p-8 rounded-lg mb-6 flex flex-col items-center w-96">
-          <h2 className="text-2xl font-bold text-center mb-4">{name}</h2>
+          <h2 className="text-2xl font-bold text-center mb-4">{name.toUpperCase()}</h2>
           {sprites && (
             <img
               src={sprites.front_default}
               alt={`Image of ${name}`}
-              className="w-48 h-48 object-contain"
+              className="w-48 h-48 object-contain mb-4"
             />
           )}
           <div className="mt-6 text-center">
             {/* Display Pokemon stats */}
-            {Object.entries(stats).map(([statName, value]) => (
-              <p key={statName} className="text-lg">{statName}: {value}</p>
+            {stats.map((stat, index) => (
+              <p key={index} className="text-lg">{stat.stat.name}: {stat.base_stat}</p>
             ))}
           </div>
+        </div>
+      </div>
+      {/* Display evolutions */}
+      <div className="mt-8">
+        <h2 className="text-2xl font-bold mb-4">{name.toUpperCase()}'S Evolutions</h2>
+        <div className="flex justify-center">
+          {evolutionChain.map((stage, index) => (
+            <div key={index} className="flex flex-col items-center mr-4">
+              <img src={stage.sprite} alt={`Sprite of ${stage.name}`} className="w-24 h-24 mb-2" />
+              <p className="text-lg">{stage.name}</p>
+            </div>
+          ))}
         </div>
       </div>
     </div>
