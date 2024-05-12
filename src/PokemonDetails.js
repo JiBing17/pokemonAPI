@@ -8,6 +8,7 @@ function PokemonDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [evolutionChain, setEvolutionChain] = useState([]);
+  const [moves, setMoves] = useState([]);
 
   useEffect(() => {
     // Fetch Pokemon details and evolution chain from the API
@@ -22,8 +23,11 @@ function PokemonDetails() {
         const speciesResponse = await axios.get(speciesUrl);
         const evolutionChainUrl = speciesResponse.data.evolution_chain.url;
         const evolutionChainResponse = await axios.get(evolutionChainUrl);
-        console.log(evolutionChainResponse.data)
         setEvolutionChain(parseEvolutionChain(evolutionChainResponse.data));
+
+        // retrieves the names of the top four moves from the fetched data
+        const movesUrl = response.data.moves.slice(0, 4).map(move => move.move.name);
+        setMoves(movesUrl);
 
         setLoading(false);
       } catch (error) {
@@ -39,11 +43,13 @@ function PokemonDetails() {
   const parseEvolutionChain = (chain) => {
     const stages = [];
     let currentStage = chain.chain;
-
     // Traverse the evolution chain and store object with name / pic
     while (currentStage) {
+      console.log(currentStage.species.url)
+
       stages.push({
         name: currentStage.species.name,
+        // gets number id of current pokemon for png 
         sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${currentStage.species.url.split("/")[6]}.png`,
       });
 
@@ -52,7 +58,6 @@ function PokemonDetails() {
 
     return stages;
   };
-
   // Render loading message if data is still loading
   if (loading) {
     return <div>Loading...</div>;
@@ -68,10 +73,11 @@ function PokemonDetails() {
 
   // destructure pokemon detail object
   const { name, sprites, stats } = pokemonDetails;
-  console.log(stats)
+
   return (
     <div className="container mx-auto px-4 pt-20">
       <div className="flex justify-center">
+        {/* Display Pokemon's Name and Picture */}
         <div className="bg-gray-200 p-8 rounded-lg mb-6 flex flex-col items-center w-96">
           <h2 className="text-2xl font-bold text-center mb-4">{name.toUpperCase()}</h2>
           {sprites && (
@@ -101,8 +107,21 @@ function PokemonDetails() {
           ))}
         </div>
       </div>
+      {/* Display moves */}
+      <div className="mt-8">
+        <h2 className="text-2xl font-bold mb-4">Top 4 Moves</h2>
+        <div className="grid grid-cols-2 gap-4">
+          {moves.map((move, index) => (
+            <button key={index} className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg">
+              {move}
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
 
 export default PokemonDetails;
+
+
