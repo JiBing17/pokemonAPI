@@ -97,7 +97,7 @@ function PokemonDetails() {
   };
 
   return (
-    <div className="container mx-auto px-4 pt-20">
+    <div className="container mx-auto px-4 pt-20 mt-10">
       <div className="flex justify-center">
         {/* Display Pokemon's Name and Picture */}
         <div className="bg-gray-200 p-8 rounded-lg mb-6 flex flex-col items-center w-96 relative">
@@ -115,25 +115,28 @@ function PokemonDetails() {
             <img
               src={sprites.front_default}
               alt={`Image of ${name}`}
-              className="w-48 h-48 object-contain my-4"
+              className="w-60 h-60 object-contain my-4"
             />
           )}
-          <div className="mt-6 text-center">
+          <div className="mt-6 text-center grid grid-cols-2 gap-4">
             {/* Display Pokemon stats */}
             {stats.map((stat, index) => (
-              <p key={index} className="text-lg">{stat.stat.name}: {stat.base_stat}</p>
+              <div key={index}>
+                <p className="text-lg">{stat.stat.name}: {stat.base_stat}</p>
+              </div>
             ))}
           </div>
+
         </div>
       </div>
       {/* Display evolutions as card links*/}
       <div className="mt-8">
         <h2 className="text-2xl font-bold mb-4">{name.toUpperCase()}'S Evolutions</h2>
-        <div className="flex justify-center">
+        <div className="flex justify-evenly">
           {evolutionChain.map((stage, index) => (
             <div key={index} className="flex flex-col items-center mr-4">
               <Link to={`/pokemon/${stage.name}`}>
-                <img src={stage.sprite} alt={`Sprite of ${stage.name}`} className="w-24 h-24 mb-2" />
+                <img src={stage.sprite} alt={`Sprite of ${stage.name}`} className="w-40 h-40 mb-2" />
               </Link>
               <p className="text-lg">{stage.name}</p>
             </div>
