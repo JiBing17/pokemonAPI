@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 
 function PokemonDetails() {
   const { pokemonName } = useParams(); // Access URL parameters using useParams
@@ -125,13 +125,15 @@ function PokemonDetails() {
           </div>
         </div>
       </div>
-      {/* Display evolutions*/}
+      {/* Display evolutions as card links*/}
       <div className="mt-8">
         <h2 className="text-2xl font-bold mb-4">{name.toUpperCase()}'S Evolutions</h2>
         <div className="flex justify-center">
           {evolutionChain.map((stage, index) => (
             <div key={index} className="flex flex-col items-center mr-4">
-              <img src={stage.sprite} alt={`Sprite of ${stage.name}`} className="w-24 h-24 mb-2" />
+              <Link to={`/pokemon/${stage.name}`}>
+                <img src={stage.sprite} alt={`Sprite of ${stage.name}`} className="w-24 h-24 mb-2" />
+              </Link>
               <p className="text-lg">{stage.name}</p>
             </div>
           ))}

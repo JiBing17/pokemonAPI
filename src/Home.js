@@ -94,7 +94,7 @@ function Home() {
     // Render the Pokemon data, images, and pagination controls
     return (
         <div className="container mx-auto px-4 pt-20">
-          <div className="flex items-center justify-center w-full mb-4">
+          <div className="flex items-center justify-center w-full my-4">
             <div className="flex items-center">
               <input
                 type="text"
