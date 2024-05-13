@@ -72,7 +72,7 @@ function PokemonDetails() {
   }
 
   // Destructure pokemon detail object
-  const { name, sprites, stats, types } = pokemonDetails;
+  const { name, sprites, stats, types, id } = pokemonDetails;
 
   // Define background colors based on Pokemon types
   const typeColors = {
@@ -100,8 +100,9 @@ function PokemonDetails() {
     <div className="container mx-auto px-4 pt-20">
       <div className="flex justify-center">
         {/* Display Pokemon's Name and Picture */}
-        <div className="bg-gray-200 p-8 rounded-lg mb-6 flex flex-col items-center w-96">
+        <div className="bg-gray-200 p-8 rounded-lg mb-6 flex flex-col items-center w-96 relative">
           <h2 className="text-2xl font-bold mb-2">{name.toUpperCase()}</h2>
+          <span className="absolute top-0 right-0 text-lg font-bold text-gray-500 mt-2 mr-4">{`#${id}`}</span>
           {/* Display Pokemon's Types */}
           <div className="flex">
             {types.map((type, index) => (
@@ -142,7 +143,7 @@ function PokemonDetails() {
       {/* Display moves */}
       <div className="mt-8">
         <h2 className="text-2xl font-bold mb-4">Top 4 Moves</h2>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-4 px-8 py-8">
           {moves.map((move, index) => (
             <button key={index} className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg">
               {move}
