@@ -99,9 +99,10 @@ function PokemonDetails() {
     <div className="container mx-auto px-4 pt-20 mt-10">
       <div className="flex justify-center">
         {/* Display Pokemon's Name and Picture */}
-        <Card sx={{ width: 300 }} style={{ textAlign: 'center', margin: 'auto', position: 'relative' }}>
+        <Card sx={{ width: 400, borderRadius: 4, boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)" }}>
           <CardContent>
-            <Typography variant="h5" component="div" gutterBottom>
+            {/* Display Pokemon's Name */}
+            <Typography variant="h5" component="div" gutterBottom style={{textAlign: 'center'}}>
               {name.toUpperCase()}
             </Typography>
             {/* Display Pokemon's ID */}
@@ -109,7 +110,7 @@ function PokemonDetails() {
               #{id}
             </Typography>
             {/* Display Pokemon's Types */}
-            <div style={{ display: "flex-center" }}>
+            <div style={{ display: "flex", justifyContent: "center", marginBottom: "10px" }}>
               {types.map((type, index) => (
                 <Chip
                   key={index}
@@ -120,10 +121,16 @@ function PokemonDetails() {
             </div>
             {/* Display Pokemon's Image */}
             {sprites && (
-              <CardMedia component="img" height="300" image={sprites.front_default} alt={`Image of ${name}`} />
+              <CardMedia 
+                component="img" 
+                height="300" 
+                image={sprites.other['official-artwork'].front_default} 
+                alt={`Image of ${name}`} 
+                style={{ imageRendering: 'pixelated'}} 
+              />
             )}
+            {/* Display Pokemon stats */}
             <div className="mt-6 text-center">
-              {/* Display Pokemon stats */}
               <Grid container spacing={2}>
                 {stats.map((stat, index) => (
                   <Grid item xs={6} key={index}>
