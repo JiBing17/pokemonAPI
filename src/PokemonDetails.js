@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams, Link } from "react-router-dom";
+import { Grid, Card, CardContent, CardMedia, Chip } from "@mui/material";
+import Typography from '@mui/material/Typography';
 
 function PokemonDetails() {
   const { pokemonName } = useParams(); // Access URL parameters using useParams
@@ -18,14 +20,12 @@ function PokemonDetails() {
         const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`);
         setPokemonDetails(response.data);
 
-        // Fetch evolution chain data
         const speciesUrl = response.data.species.url;
         const speciesResponse = await axios.get(speciesUrl);
         const evolutionChainUrl = speciesResponse.data.evolution_chain.url;
         const evolutionChainResponse = await axios.get(evolutionChainUrl);
         setEvolutionChain(parseEvolutionChain(evolutionChainResponse.data));
 
-        // Retrieve the names of the top four moves from the fetched data
         const movesUrl = response.data.moves.slice(0, 4).map(move => move.move.name);
         setMoves(movesUrl);
 
@@ -71,7 +71,6 @@ function PokemonDetails() {
     return <div>Pokemon details not found.</div>;
   }
 
-  // Destructure pokemon detail object
   const { name, sprites, stats, types, id } = pokemonDetails;
 
   // Define background colors based on Pokemon types
@@ -100,37 +99,44 @@ function PokemonDetails() {
     <div className="container mx-auto px-4 pt-20 mt-10">
       <div className="flex justify-center">
         {/* Display Pokemon's Name and Picture */}
-        <div className="bg-gray-200 p-8 rounded-lg mb-6 flex flex-col items-center w-96 relative">
-          <h2 className="text-2xl font-bold mb-2">{name.toUpperCase()}</h2>
-          <span className="absolute top-0 right-0 text-lg font-bold text-gray-500 mt-2 mr-4">{`#${id}`}</span>
-          {/* Display Pokemon's Types */}
-          <div className="flex">
-            {types.map((type, index) => (
-              <span key={index} className={`text-white px-4 py-1 rounded-lg mx-2`} style={{ backgroundColor: typeColors[type.type.name] }}>
-                {type.type.name}
-              </span>
-            ))}
-          </div>
-          {sprites && (
-            <img
-              src={sprites.front_default}
-              alt={`Image of ${name}`}
-              className="w-60 h-60 object-contain my-4"
-            />
-          )}
-          <div className="mt-6 text-center grid grid-cols-2 gap-4">
-            {/* Display Pokemon stats */}
-            {stats.map((stat, index) => (
-              <div key={index}>
-                <p className="text-lg">{stat.stat.name}: {stat.base_stat}</p>
-              </div>
-            ))}
-          </div>
-
-        </div>
+        <Card sx={{ width: 300 }} style={{ textAlign: 'center', margin: 'auto', position: 'relative' }}>
+          <CardContent>
+            <Typography variant="h5" component="div" gutterBottom>
+              {name.toUpperCase()}
+            </Typography>
+            {/* Display Pokemon's ID */}
+            <Typography variant="body2" color="text.secondary" sx={{ position: "absolute", top: 0, right: 0, marginTop: '7px', marginRight: '7px'}}>
+              #{id}
+            </Typography>
+            {/* Display Pokemon's Types */}
+            <div style={{ display: "flex-center" }}>
+              {types.map((type, index) => (
+                <Chip
+                  key={index}
+                  label={type.type.name}
+                  sx={{ backgroundColor: typeColors[type.type.name], color: "white", marginRight: "5px" }}
+                />
+              ))}
+            </div>
+            {/* Display Pokemon's Image */}
+            {sprites && (
+              <CardMedia component="img" height="300" image={sprites.front_default} alt={`Image of ${name}`} />
+            )}
+            <div className="mt-6 text-center">
+              {/* Display Pokemon stats */}
+              <Grid container spacing={2}>
+                {stats.map((stat, index) => (
+                  <Grid item xs={6} key={index}>
+                    <Typography variant="body2" color="text.secondary">{stat.stat.name}: {stat.base_stat}</Typography>
+                  </Grid>
+                ))}
+              </Grid>
+            </div>
+          </CardContent>
+        </Card>
       </div>
-      {/* Display evolutions as card links*/}
       <div className="mt-8">
+        {/* Display Pokemon's Evolutions */}
         <h2 className="text-2xl font-bold mb-4">{name.toUpperCase()}'S Evolutions</h2>
         <div className="flex justify-evenly">
           {evolutionChain.map((stage, index) => (
@@ -143,8 +149,8 @@ function PokemonDetails() {
           ))}
         </div>
       </div>
-      {/* Display moves */}
       <div className="mt-8">
+        {/* Display Pokemon's Top 4 Moves */}
         <h2 className="text-2xl font-bold mb-4">Top 4 Moves</h2>
         <div className="grid grid-cols-2 gap-4 px-8 py-8">
           {moves.map((move, index) => (
