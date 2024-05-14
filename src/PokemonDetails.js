@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams, Link } from "react-router-dom";
-import { Grid, Card, CardContent, CardMedia, Chip } from "@mui/material";
+import { Grid, Card, CardContent, CardMedia, Chip, Button } from "@mui/material";
 import Typography from '@mui/material/Typography';
 
 function PokemonDetails() {
@@ -115,7 +115,7 @@ function PokemonDetails() {
                 <Chip
                   key={index}
                   label={type.type.name}
-                  sx={{ backgroundColor: typeColors[type.type.name], color: "white", marginRight: "5px" }}
+                  sx={{ backgroundColor: typeColors[type.type.name], color: "white", marginRight: "5px", paddingRight: "10px", paddingLeft: "10px" }}
                 />
               ))}
             </div>
@@ -129,8 +129,8 @@ function PokemonDetails() {
                 style={{ imageRendering: 'pixelated'}} 
               />
             )}
-            {/* Display Pokemon stats */}
             <div className="mt-6 text-center">
+              {/* Display Pokemon stats */}
               <Grid container spacing={2}>
                 {stats.map((stat, index) => (
                   <Grid item xs={6} key={index}>
@@ -161,9 +161,13 @@ function PokemonDetails() {
         <h2 className="text-2xl font-bold mb-4">Top 4 Moves</h2>
         <div className="grid grid-cols-2 gap-4 px-8 py-8">
           {moves.map((move, index) => (
-            <button key={index} className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg">
+            <Button 
+              key={index} 
+              variant="contained" 
+              style={{ backgroundColor: "#82909D", color: "white", borderRadius: "10px", fontWeight: "bold" }}
+            >
               {move}
-            </button>
+            </Button>
           ))}
         </div>
       </div>
