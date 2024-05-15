@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { Card, CardContent, Typography } from "@mui/material";
+import { Card, CardContent, Typography, Button } from "@mui/material";
+import { NavigateBefore, NavigateNext } from "@mui/icons-material";
 
 // Base URL for the PokeAPI
 const BASE_URL = "https://pokeapi.co/api/v2";
@@ -114,7 +115,7 @@ function Home() {
         {filteredPokemonData.map((pokemon, index) => (
           // Link to individual Pokemon page
           <Link to={`/pokemon/${pokemon.name}`} key={index} className="text-black no-underline">
-            <Card className="bg-gray-200 p-6 rounded-lg mb-6 flex flex-col items-center w-72 md:w-96 mr-4 md:mb-4 relative">
+            <Card className="bg-white border border-gray-400 shadow-md p-4 rounded-md mb-6 flex flex-col items-center w-72 md:w-96 mr-4 md:mb-4 relative">
               <CardContent>
                 <Typography variant="h5" component="h2" className="text-xl font-bold text-center mb-2">
                   {pokemon.name}
@@ -138,12 +139,12 @@ function Home() {
       </div>
       {/* Pagination controls */}
       <div className="flex justify-center mt-4 space-x-8">
-        <button onClick={handlePrevPage} disabled={currentPage === 1} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg">
+        <Button onClick={handlePrevPage} disabled={currentPage === 1} variant="contained" color="primary" startIcon={<NavigateBefore />}>
           Previous
-        </button>
-        <button onClick={handleNextPage} disabled={currentPage === totalPages} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg">
+        </Button>
+        <Button onClick={handleNextPage} disabled={currentPage === totalPages} variant="contained" color="primary" endIcon={<NavigateNext />}>
           Next
-        </button>
+        </Button>
       </div>
     </div>
   );
