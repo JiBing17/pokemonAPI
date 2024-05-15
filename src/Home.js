@@ -1,7 +1,7 @@
-// Import necessary libraries
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom"; 
+import { Link } from "react-router-dom";
+import { Card, CardContent, Typography } from "@mui/material";
 
 // Base URL for the PokeAPI
 const BASE_URL = "https://pokeapi.co/api/v2";
@@ -22,9 +22,11 @@ function Home() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${POKEMON_URL}?offset=${(currentPage - 1) * 48}&limit=48`);
+        const response = await axios.get(
+          `${POKEMON_URL}?offset=${(currentPage - 1) * 48}&limit=48`
+        );
         setPokemonData(response.data.results);
-        setTotalPages(Math.ceil(response.data.count / 50));
+        setTotalPages(Math.ceil(response.data.count / 48));
       } catch (error) {
         setError(error);
       }
@@ -112,18 +114,25 @@ function Home() {
         {filteredPokemonData.map((pokemon, index) => (
           // Link to individual Pokemon page
           <Link to={`/pokemon/${pokemon.name}`} key={index} className="text-black no-underline">
-            <div className="bg-gray-200 p-6 rounded-lg mb-6 flex flex-col items-center w-72 md:w-96 mr-4 md:mb-4 relative">
-              <span className="absolute top-0 right-0 text-sm font-bold text-gray-500 mt-2 mr-4">#{index + 1}</span>
-              <h2 className="text-xl font-bold text-center mb-2">{pokemon.name}</h2>
-              {/* Render Pokemon image if available */}
-              {pokemonImages[pokemon.name] && (
-                <img
-                  src={pokemonImages[pokemon.name]}
-                  alt={`Image of ${pokemon.name}`}
-                  className="mt-2 w-32 h-32 object-contain"
-                />
-              )}
-            </div>
+            <Card className="bg-gray-200 p-6 rounded-lg mb-6 flex flex-col items-center w-72 md:w-96 mr-4 md:mb-4 relative">
+              <CardContent>
+                <Typography variant="h5" component="h2" className="text-xl font-bold text-center mb-2">
+                  {pokemon.name}
+                </Typography>
+                {/* Render Pokemon image if available */}
+                {pokemonImages[pokemon.name] && (
+                  <img
+                    src={pokemonImages[pokemon.name]}
+                    alt={`Image of ${pokemon.name}`}
+                    className="mt-2 w-32 h-32 object-contain"
+                  />
+                )}
+              </CardContent>
+              {/* Render Pokemon index */}
+              <Typography variant="body2" color="textSecondary" className="absolute top-0 right-0 text-sm font-bold text-gray-500 pt-2 pr-4">
+                #{index + 1}
+              </Typography>
+            </Card>
           </Link>
         ))}
       </div>
