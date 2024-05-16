@@ -6,11 +6,14 @@ import Typography from '@mui/material/Typography';
 
 function PokemonDetails() {
   const { pokemonName } = useParams(); // Access URL parameters using useParams
+
+  // State variables to store relevant data
   const [pokemonDetails, setPokemonDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [evolutionChain, setEvolutionChain] = useState([]);
   const [moves, setMoves] = useState([]);
+  const [about, setAbout] = useState(""); 
 
   useEffect(() => {
     // Fetch Pokemon details and evolution chain from the API
@@ -20,14 +23,24 @@ function PokemonDetails() {
         const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`);
         setPokemonDetails(response.data);
 
+        // Fetch Pokémon Evolutions
         const speciesUrl = response.data.species.url;
         const speciesResponse = await axios.get(speciesUrl);
         const evolutionChainUrl = speciesResponse.data.evolution_chain.url;
         const evolutionChainResponse = await axios.get(evolutionChainUrl);
         setEvolutionChain(parseEvolutionChain(evolutionChainResponse.data));
 
+        // Fetch Pokémon Moves
         const movesUrl = response.data.moves.slice(0, 4).map(move => move.move.name);
         setMoves(movesUrl);
+
+        // Fetch Pokémon description
+        const speciesDescription = await axios.get(speciesUrl);
+        const flavorTextEntries = speciesDescription.data.flavor_text_entries.filter(entry => entry.language.name === "en");
+        if (flavorTextEntries.length > 0) {
+          const cleanDescription = flavorTextEntries[0].flavor_text.replace(/\f/g, " ");
+          setAbout(cleanDescription);
+        }
 
         setLoading(false);
       } catch (error) {
@@ -142,6 +155,15 @@ function PokemonDetails() {
           </CardContent>
         </Card>
       </div>
+      {/* Display Pokemon's About Section */}
+      {about && (
+        <div className="mt-8">
+          <h2 className="text-2xl font-bold mb-4">About</h2>
+          <div className="text-center px-8">
+            <Typography variant="body1">{about}</Typography>
+          </div>
+        </div>
+      )}
       <div className="mt-8">
         {/* Display Pokemon's Evolutions */}
         <h2 className="text-2xl font-bold mb-4">{name.toUpperCase()}'S Evolutions</h2>
@@ -172,6 +194,7 @@ function PokemonDetails() {
         </div>
       </div>
     </div>
+    
   );
 }
 
