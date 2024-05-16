@@ -131,7 +131,7 @@ function Home() {
               </CardContent>
               {/* Render Pokemon index */}
               <Typography variant="body2" color="textSecondary" className="absolute top-0 right-0 text-sm font-bold text-gray-500 pt-2 pr-4">
-                #{index + 1}
+                #{(currentPage - 1) * 48 + index + 1}
               </Typography>
             </Card>
           </Link>
