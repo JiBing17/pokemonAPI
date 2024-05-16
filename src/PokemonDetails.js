@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams, Link } from "react-router-dom";
-import { Grid, Card, CardContent, CardMedia, Chip, Button } from "@mui/material";
+import { Grid, Card, CardContent, CardMedia, Chip, Button, Box } from "@mui/material"; // Import Box component
 import Typography from '@mui/material/Typography';
 
 function PokemonDetails() {
@@ -157,44 +157,47 @@ function PokemonDetails() {
       </div>
       {/* Display Pokemon's About Section */}
       {about && (
-        <div className="mt-8">
+        <Box sx={{ border: 1, borderColor: 'red', borderRadius: 4, padding: 2, marginTop: 4 }}>
           <h2 className="text-2xl font-bold mb-4">About</h2>
-          <div className="text-center px-8">
+          <div className="text-center">
             <Typography variant="body1">{about}</Typography>
           </div>
-        </div>
+        </Box>
       )}
       <div className="mt-8">
         {/* Display Pokemon's Evolutions */}
-        <h2 className="text-2xl font-bold mb-4">{name.toUpperCase()}'S Evolutions</h2>
-        <div className="flex justify-evenly">
-          {evolutionChain.map((stage, index) => (
-            <div key={index} className="flex flex-col items-center mr-4">
-              <Link to={`/pokemon/${stage.name}`}>
-                <img src={stage.sprite} alt={`Sprite of ${stage.name}`} className="w-40 h-40 mb-2" />
-              </Link>
-              <p className="text-lg">{stage.name}</p>
-            </div>
-          ))}
-        </div>
+        <Box sx={{ border: 1, borderColor: 'red', borderRadius: 4, padding: 2, marginTop: 4 }}>
+          <h2 className="text-2xl font-bold mb-4">{name.toUpperCase()}'S Evolutions</h2>
+          <div className="flex justify-evenly">
+            {evolutionChain.map((stage, index) => (
+              <div key={index} className="flex flex-col items-center mr-4">
+                <Link to={`/pokemon/${stage.name}`}>
+                  <img src={stage.sprite} alt={`Sprite of ${stage.name}`} className="w-40 h-40 mb-2" />
+                </Link>
+                <p className="text-lg">{stage.name}</p>
+              </div>
+            ))}
+          </div>
+        </Box>
       </div>
       <div className="mt-8">
         {/* Display Pokemon's Top 4 Moves */}
-        <h2 className="text-2xl font-bold mb-4">Top 4 Moves</h2>
-        <div className="grid grid-cols-2 gap-4 px-8 py-8">
-          {moves.map((move, index) => (
-            <Button 
-              key={index} 
-              variant="contained" 
-              style={{ backgroundColor: "#82909D", color: "white", borderRadius: "10px", fontWeight: "bold" }}
-            >
-              {move}
-            </Button>
-          ))}
-        </div>
+        <Box sx={{ border: 1, borderColor: 'red', borderRadius: 4, padding: 2, marginTop: 4 }}>
+          <h2 className="text-2xl font-bold mb-4">Top 4 Moves</h2>
+          <div className="grid grid-cols-2 gap-4 px-8 py-8">
+            {moves.map((move, index) => (
+              <Button 
+                key={index} 
+                variant="contained" 
+                style={{ backgroundColor: "red", color: "white", borderRadius: "10px", fontWeight: "bold" }}
+              >
+                {move}
+              </Button>
+            ))}
+          </div>
+        </Box>
       </div>
     </div>
-    
   );
 }
 
