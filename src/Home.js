@@ -73,11 +73,11 @@ function Home() {
 
   // Handlers for navigating pages
   const handlePrevPage = () => {
-    setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
+    setCurrentPage((currPage) => Math.max(currPage - 1, 1));
     setSearchQuery("");
   };
   const handleNextPage = () => {
-    setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages));
+    setCurrentPage((currPage) => Math.min(currPage + 1, totalPages));
     setSearchQuery("");
   };
 
@@ -106,7 +106,7 @@ function Home() {
             placeholder="Search Pokémon..."
             value={searchQuery}
             onChange={handleSearchInputChange}
-            className="px-4 py-2 border border-gray-300 rounded-md mr-2 w-full md:w-64"
+            className="px-4 py-2 border border-gray-300 rounded-md w-full md:w-64"
           />
         </div>
       </div>

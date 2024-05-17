@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams, Link } from "react-router-dom";
-import { Grid, Card, CardContent, CardMedia, Chip, Button, Box } from "@mui/material"; // Import Box component
+import { Grid, Card, CardContent, CardMedia, Chip, Button, Box } from "@mui/material";
 import Typography from '@mui/material/Typography';
 
 function PokemonDetails() {
@@ -112,14 +112,14 @@ function PokemonDetails() {
     <div className="container mx-auto px-4 pt-20 mt-10">
       <div className="flex justify-center">
         {/* Display Pokemon's Name and Picture */}
-        <Card sx={{ width: 400, borderRadius: 4, boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)" }}>
+        <Card sx={{ width: 400, borderRadius: 4, boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)", position: "relative"}}>
           <CardContent>
             {/* Display Pokemon's Name */}
             <Typography variant="h5" component="div" gutterBottom style={{textAlign: 'center'}}>
               {name.toUpperCase()}
             </Typography>
             {/* Display Pokemon's ID */}
-            <Typography variant="body2" color="text.secondary" sx={{ position: "absolute", top: 0, right: 0, marginTop: '7px', marginRight: '7px'}}>
+            <Typography variant="body2" color="text.secondary" sx={{ position: "absolute", top: 0, right: 0, marginTop: '10px', marginRight: '10px'}}>
               #{id}
             </Typography>
             {/* Display Pokemon's Types */}
@@ -128,7 +128,7 @@ function PokemonDetails() {
                 <Chip
                   key={index}
                   label={type.type.name}
-                  sx={{ backgroundColor: typeColors[type.type.name], color: "white", marginRight: "5px", paddingRight: "10px", paddingLeft: "10px" }}
+                  sx={{ backgroundColor: typeColors[type.type.name], color: "white", marginRight: "5px", marginLeft: "5px", paddingRight: "10px", paddingLeft: "10px" }}
                 />
               ))}
             </div>
