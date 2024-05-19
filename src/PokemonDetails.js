@@ -4,6 +4,10 @@ import { useParams, Link } from "react-router-dom";
 import { Grid, Card, CardContent, CardMedia, Chip, Button, Box } from "@mui/material";
 import Typography from '@mui/material/Typography';
 
+// API URL for the backend
+const BASE_URL = "http://localhost:5000/api";
+const POKEMON_URL = BASE_URL + "/pokemon";
+
 function PokemonDetails() {
   const { pokemonName } = useParams(); // Access URL parameters using useParams
 
@@ -15,12 +19,12 @@ function PokemonDetails() {
   const [moves, setMoves] = useState([]);
   const [about, setAbout] = useState(""); 
 
+  // Fetch Pokemon details from the backend
   useEffect(() => {
-    // Fetch Pokemon details and evolution chain from the API
     const fetchPokemonDetails = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`);
+        const response = await axios.get(`${POKEMON_URL}/${pokemonName}`);
         setPokemonDetails(response.data);
 
         // Fetch Pokémon Evolutions
@@ -169,7 +173,7 @@ function PokemonDetails() {
         <Box sx={{ border: 1, borderColor: 'red', borderRadius: 4, padding: 2, marginTop: 4 }}>
           <h2 className="text-2xl font-bold mb-4">{name.toUpperCase()}'S Evolutions</h2>
           <div className="flex justify-evenly">
-            {evolutionChain.map((stage, index) => (
+          {evolutionChain.map((stage, index) => (
               <div key={index} className="flex flex-col items-center mr-4">
                 <Link to={`/pokemon/${stage.name}`}>
                   <img src={stage.sprite} alt={`Sprite of ${stage.name}`} className="w-40 h-40 mb-2" />
