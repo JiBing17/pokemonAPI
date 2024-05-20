@@ -1,40 +1,62 @@
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
+const bodyParser = require('body-parser');
+const bcrypt = require('bcryptjs');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Enable CORS for all routes
-app.use(cors());
+app.use(cors());  // Enables CORS to allow cross-origin requests
+app.use(bodyParser.json());  // Parses JSON bodies in incoming requests
 
-// Base URL for the PokeAPI
-const BASE_URL = 'https://pokeapi.co/api/v2';
+const users = {};  // In-memory store for users
 
-// Route to fetch Pokemon data
+// Register new users with username and hashed password
+app.post('/api/users/register', async (req, res) => {
+    const { username, password } = req.body;
+    if (users[username]) {
+        return res.status(409).send('User already exists');
+    }
+    const hashedPassword = await bcrypt.hash(password, 8);
+    users[username] = { username, password: hashedPassword };
+    res.status(201).send('User created');
+});
+
+// Login existing users 
+app.post('/api/users/login', async (req, res) => {
+    const { username, password } = req.body;
+    const user = users[username];
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+        return res.status(401).send('Invalid username or password');
+    }
+    res.send('User logged in');
+});
+
+// Fetches Pokemon data from the PokeAPI
 app.get('/api/pokemon', async (req, res) => {
-  const { page = 1, limit = 48 } = req.query;
-  const offset = (page - 1) * limit;
-  try {
-    const response = await axios.get(`${BASE_URL}/pokemon?offset=${offset}&limit=${limit}`);
-    res.json(response.data);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+    const { page = 1, limit = 48 } = req.query;
+    const offset = (page - 1) * limit;
+    try {
+        const response = await axios.get(`${BASE_URL}/pokemon?offset=${offset}&limit=${limit}`);
+        res.json(response.data);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
-// Route to fetch Pokemon details
+// Fetches detailed Pokemon data by name
 app.get('/api/pokemon/:name', async (req, res) => {
-  const { name } = req.params;
-  try {
-    const response = await axios.get(`${BASE_URL}/pokemon/${name}`);
-    res.json(response.data);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+    const { name } = req.params;
+    try {
+        const response = await axios.get(`${BASE_URL}/pokemon/${name}`);
+        res.json(response.data);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
-// Start the server
+// Start the server on a specified port
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+    console.log(`Server running on port ${PORT}`);
 });

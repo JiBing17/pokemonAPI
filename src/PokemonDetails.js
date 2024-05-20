@@ -3,6 +3,7 @@ import axios from "axios";
 import { useParams, Link } from "react-router-dom";
 import { Grid, Card, CardContent, CardMedia, Chip, Button, Box } from "@mui/material";
 import Typography from '@mui/material/Typography';
+import Header from "./Header";
 
 // API URL for the backend
 const BASE_URL = "http://localhost:5000/api";
@@ -113,7 +114,9 @@ function PokemonDetails() {
   };
 
   return (
-    <div className="container mx-auto px-4 pt-20 mt-10">
+    <div>
+      <Header/>
+      <div className="container mx-auto px-4 pt-20 mt-10">
       <div className="flex justify-center">
         {/* Display Pokemon's Name and Picture */}
         <Card sx={{ width: 400, borderRadius: 4, boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)", position: "relative"}}>
@@ -202,6 +205,8 @@ function PokemonDetails() {
         </Box>
       </div>
     </div>
+    </div>
+    
   );
 }
 

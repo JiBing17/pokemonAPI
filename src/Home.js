@@ -3,6 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { Card, CardContent, Typography, Button } from "@mui/material";
 import { NavigateBefore, NavigateNext } from "@mui/icons-material";
+import Header from "./Header";
 
 // API URL for the backend
 const BASE_URL = "http://localhost:5000/api";
@@ -97,7 +98,9 @@ function Home() {
 
   // Render the Pokemon data, images, and pagination controls
   return (
-    <div className="container mx-auto px-4 pt-20">
+    <div>
+      <Header />
+      <div className="container mx-auto px-4 pt-20">
       <div className="flex items-center justify-center w-full my-4">
         <div className="flex items-center">
           <input
@@ -170,6 +173,8 @@ function Home() {
         </Button>
       </div>
     </div>
+    </div>
+    
   );
 }
 

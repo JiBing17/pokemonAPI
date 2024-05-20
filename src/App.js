@@ -1,31 +1,31 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import PokemonDetails from "./PokemonDetails";
-import Home from "./Home";
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Home from './Home';
+import PokemonDetails from './PokemonDetails';
+import Login from './Login';
+import CreateAccount from './CreateAccount';
+import { AuthProvider, useAuth } from './AuthContext';
 
+// ensures that only authenticated users can access the route
+function PrivateRoute({ children }) {
+    const { isAuthenticated } = useAuth();
+    return isAuthenticated ? children : <Navigate to="/login" />;
+}
+
+// Sets up the router and provides authentication context to all routes
 function App() {
-
-  // Function used to navigate to the home page (page 1) 
-  const handleHeaderClick = () => {
-    window.location.href = "/"; 
-  };
-
-  return (
-    <Router>
-      <div className="container mx-auto px-4">
-        <div className="fixed top-0 left-0 w-full bg-white z-10 shadow-md py-4 px-4">
-          { /* When the header link is clicked, navigate to the home page */ }
-          <Link to="/" className="text-4xl font-bold py-4 text-center md:text-left md:ml-4 md:py-0 md:w-auto md:mr-auto" onClick={handleHeaderClick}>
-            PokeAPI Data
-          </Link>
-        </div>
-      </div>
-      <Routes>
-        <Route path="/pokemon/:pokemonName" element={<PokemonDetails />} />
-        <Route path="/" element={<Home />} />
-      </Routes>
-    </Router>
-  );
+    return (
+        <AuthProvider>  { /** Provides authentication state to all child components **/}
+            <Router>
+                <Routes>
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<CreateAccount />} />
+                    <Route path="/" element={<PrivateRoute><Home /></PrivateRoute>} />
+                    <Route path="/pokemon/:pokemonName" element={<PrivateRoute><PokemonDetails /></PrivateRoute>} />
+                </Routes>
+            </Router>
+        </AuthProvider>
+    );
 }
 
 export default App;
