@@ -7,12 +7,17 @@ const bcrypt = require('bcryptjs');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors());  // Enables CORS to allow cross-origin requests
-app.use(bodyParser.json());  // Parses JSON bodies in incoming requests
+// Enable CORS for all routes
+app.use(cors());
+app.use(bodyParser.json()); // Parse JSON bodies
 
-const users = {};  // In-memory store for users
+// In-memory data store for users
+const users = {};
 
-// Register new users with username and hashed password
+// Base URL for the PokeAPI
+const BASE_URL = 'https://pokeapi.co/api/v2';
+
+// Route to create a new account
 app.post('/api/users/register', async (req, res) => {
     const { username, password } = req.body;
     if (users[username]) {
@@ -23,7 +28,7 @@ app.post('/api/users/register', async (req, res) => {
     res.status(201).send('User created');
 });
 
-// Login existing users 
+// Route to login
 app.post('/api/users/login', async (req, res) => {
     const { username, password } = req.body;
     const user = users[username];
@@ -33,7 +38,7 @@ app.post('/api/users/login', async (req, res) => {
     res.send('User logged in');
 });
 
-// Fetches Pokemon data from the PokeAPI
+// Route to fetch Pokemon data
 app.get('/api/pokemon', async (req, res) => {
     const { page = 1, limit = 48 } = req.query;
     const offset = (page - 1) * limit;
@@ -45,7 +50,7 @@ app.get('/api/pokemon', async (req, res) => {
     }
 });
 
-// Fetches detailed Pokemon data by name
+// Route to fetch Pokemon details
 app.get('/api/pokemon/:name', async (req, res) => {
     const { name } = req.params;
     try {
@@ -56,7 +61,7 @@ app.get('/api/pokemon/:name', async (req, res) => {
     }
 });
 
-// Start the server on a specified port
+// Start the server
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
 });

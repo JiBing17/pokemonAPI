@@ -5,26 +5,20 @@ import { useAuth } from './AuthContext';
 import { TextField, Button, Paper, Typography, Container, Box } from '@mui/material';
 
 function Login() {
-    // State variables for storing username and password input values
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    
-    // Get the setIsAuthenticated function from the authentication context
     const { setIsAuthenticated } = useAuth();
-    
-    // Tool to navigate to different routes
     const navigate = useNavigate();
 
-    // Function to handle login process
     const handleLogin = async () => {
         try {
-            // Make a POST request to the login endpoint with username and password
-            await axios.post('http://localhost:5000/api/users/login', { username, password });
-            setIsAuthenticated(true);
-            navigate('/'); 
+            const response = await axios.post('http://localhost:5000/api/users/login', { username, password });
+            if (response.status === 200) {
+                setIsAuthenticated(true);
+                navigate('/'); // Redirect to home after login
+            }
         } catch (error) {
-            // If login fails, show an alert and log the error to the console
-            alert('Login failed!');
+            alert('Login failed! ' + (error.response?.data?.message || ''));
             console.error('Login error:', error);
         }
     };

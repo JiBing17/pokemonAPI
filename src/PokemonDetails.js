@@ -196,7 +196,7 @@ function PokemonDetails() {
               <Button 
                 key={index} 
                 variant="contained" 
-                style={{ backgroundColor: "red", color: "white", borderRadius: "10px", fontWeight: "bold" }}
+                style={{ backgroundColor: '#C22E28', color: "white", borderRadius: "10px", fontWeight: "bold" }}
               >
                 {move}
               </Button>
