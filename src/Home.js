@@ -108,7 +108,8 @@ function Home() {
         <div className="flex flex-wrap justify-center">
           {filteredPokemonData.map((pokemon, index) => (
             <Link to={`/pokemon/${pokemon.name}`} key={index} className="text-black no-underline">
-              <Card className="bg-white border border-gray-400 shadow-md p-4 rounded-md mb-6 flex flex-col items-center w-72 md:w-96 mr-4 md:mb-4 relative">
+              <Card className="bg-white shadow-md p-4 rounded-md mb-6 flex flex-col items-center w-72 md:w-96 mr-4 md:mb-4 relative" 
+              style={{ borderColor: '#C22E28', borderWidth: '1px', borderStyle: 'solid' }}>
                 <CardContent>
                   <Typography
                     variant="h5"
