@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { Card, CardContent, Typography, Button } from "@mui/material";
+import { Card, CardContent, Typography, Button, Box } from "@mui/material";
 import { NavigateBefore, NavigateNext } from "@mui/icons-material";
 import Header from "./Header";
 
@@ -23,16 +23,13 @@ function Home() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          `${POKEMON_URL}?page=${currentPage}&limit=48`
-        );
+        const response = await axios.get(`${POKEMON_URL}?page=${currentPage}&limit=48`);
         setPokemonData(response.data.results);
         setTotalPages(Math.ceil(response.data.count / 48));
       } catch (error) {
         setError(error);
       }
     };
-
     fetchData();
   }, [currentPage]);
 
@@ -57,7 +54,6 @@ function Home() {
       }
       setPokemonImages(images);
     };
-
     fetchPokemonImages();
   }, [pokemonData]);
 
@@ -65,8 +61,7 @@ function Home() {
   useEffect(() => {
     setFilteredPokemonData(
       pokemonData.filter(
-        (pokemon) =>
-          pokemon.name.toLowerCase().startsWith(searchQuery.toLowerCase())
+        (pokemon) => pokemon.name.toLowerCase().startsWith(searchQuery.toLowerCase())
       )
     );
   }, [pokemonData, searchQuery]);
@@ -101,8 +96,7 @@ function Home() {
     <div>
       <Header />
       <div className="container mx-auto px-4 pt-20">
-      <div className="flex items-center justify-center w-full my-4">
-        <div className="flex items-center">
+        <div className="flex items-center justify-center w-full my-4">
           <input
             type="text"
             placeholder="Search Pokémon..."
@@ -111,70 +105,74 @@ function Home() {
             className="px-4 py-2 border border-gray-300 rounded-md w-full md:w-64"
           />
         </div>
-      </div>
-      {/* Pokemon Cards */}
-      <div className="flex flex-wrap justify-center">
-        {filteredPokemonData.map((pokemon, index) => (
-          // Link to individual Pokemon page
-          <Link
-            to={`/pokemon/${pokemon.name}`}
-            key={index}
-            className="text-black no-underline"
+        <div className="flex flex-wrap justify-center">
+          {filteredPokemonData.map((pokemon, index) => (
+            <Link to={`/pokemon/${pokemon.name}`} key={index} className="text-black no-underline">
+              <Card className="bg-white border border-gray-400 shadow-md p-4 rounded-md mb-6 flex flex-col items-center w-72 md:w-96 mr-4 md:mb-4 relative">
+                <CardContent>
+                  <Typography
+                    variant="h5"
+                    component="h2"
+                    className="text-xl font-bold text-center mb-2"
+                  >
+                    {pokemon.name}
+                  </Typography>
+                  {pokemonImages[pokemon.name] && (
+                    <img
+                      src={pokemonImages[pokemon.name]}
+                      alt={`Image of ${pokemon.name}`}
+                      className="mt-2 w-32 h-32 object-contain"
+                    />
+                  )}
+                  {/* Render Pokemon index */}
+                  <Typography
+                    variant="body2"
+                    color="textSecondary"
+                    style={{ position: 'absolute', top: '8px', right: '8px' }}
+                    className="text-sm font-bold text-gray-500"
+                  >
+                    #{(currentPage - 1) * 48 + index + 1}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
+        {/* Pagination controls */}
+        <Box display="flex" justifyContent="center" mt={4} gap={2}>
+          <Button
+            onClick={handlePrevPage}
+            disabled={currentPage === 1}
+            startIcon={<NavigateBefore />}
+            style={{
+              backgroundColor: '#C22E28',  // Pokémon red color
+              color: 'white',
+              minWidth: '100px',  // Set min / max width for equal sizing
+              maxWidth: '150px',  
+              flex: 1,           
+            }}
+            variant="contained"
           >
-            <Card className="bg-white border border-gray-400 shadow-md p-4 rounded-md mb-6 flex flex-col items-center w-72 md:w-96 mr-4 md:mb-4 relative">
-              <CardContent>
-                <Typography
-                  variant="h5"
-                  component="h2"
-                  className="text-xl font-bold text-center mb-2"
-                >
-                  {pokemon.name}
-                </Typography>
-                {/* Render Pokemon image if available */}
-                {pokemonImages[pokemon.name] && (
-                  <img
-                    src={pokemonImages[pokemon.name]}
-                    alt={`Image of ${pokemon.name}`}
-                    className="mt-2 w-32 h-32 object-contain"
-                  />
-                )}
-              </CardContent>
-              {/* Render Pokemon index */}
-              <Typography
-                variant="body2"
-                color="textSecondary"
-                className="absolute top-0 right-0 text-sm font-bold text-gray-500 pt-2 pr-4"
-              >
-                #{(currentPage - 1) * 48 + index + 1}
-              </Typography>
-            </Card>
-          </Link>
-        ))}
-      </div>
-      {/* Pagination controls */}
-      <div className="flex justify-center mt-4 space-x-8">
-        <Button
-          onClick={handlePrevPage}
-          disabled={currentPage === 1}
-          variant="contained"
-          color="primary"
-          startIcon={<NavigateBefore />}
-        >
-          Previous
-        </Button>
-        <Button
-          onClick={handleNextPage}
-          disabled={currentPage === totalPages}
-          variant="contained"
-          color="primary"
-          endIcon={<NavigateNext />}
-        >
-          Next
-        </Button>
+            Previous
+          </Button>
+          <Button
+            onClick={handleNextPage}
+            disabled={currentPage === totalPages}
+            endIcon={<NavigateNext />}
+            style={{
+              backgroundColor: '#C22E28',  // Pokémon red color
+              color: 'white',
+              minWidth: '100px',  // Set min / max width for equal sizing
+              maxWidth: '150px',  
+              flex: 1,            
+            }}
+            variant="contained"
+          >
+            Next
+          </Button>
+        </Box>
       </div>
     </div>
-    </div>
-    
   );
 }
 
