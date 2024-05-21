@@ -184,9 +184,9 @@ function PokemonDetails() {
         </div>
 
         <div className="mt-8">
-          {/* Display Pokemon's Top 4 Moves */}
+          {/* Display Pokemon's Moves */}
           <Box sx={{ border: 1, borderColor: 'red', borderRadius: 4, padding: 2, marginTop: 4 }}>
-            <h2 className="text-2xl font-bold mb-4">Top 4 Moves</h2>
+            <h2 className="text-2xl font-bold mb-4">Moves</h2>
             <div className="grid grid-cols-2 gap-4 px-8 py-8">
               {moves.map((move, index) => (
                 <Button 
