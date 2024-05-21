@@ -114,7 +114,7 @@ function Home() {
                   <Typography
                     variant="h5"
                     component="h2"
-                    className="text-xl font-bold text-center mb-2"
+                    className="text-xl font-bold text-center mb-2 font-poppins"
                   >
                     {pokemon.name}
                   </Typography>
