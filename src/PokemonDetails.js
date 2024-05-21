@@ -102,7 +102,7 @@ function PokemonDetails() {
         </Button>
         <div className="flex justify-center">
           {/* Display Pokemon's Name and Picture */}
-          <Card sx={{ width: 400, borderRadius: 4, boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)", position: "relative"}}>
+          <Card sx={{ width: 400, borderRadius: 4, boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)", position: "relative"}}>
             <CardContent>
               {/* Display Pokemon's Name */}
               <Typography variant="h5" component="div" gutterBottom style={{textAlign: 'center'}}>
@@ -158,19 +158,31 @@ function PokemonDetails() {
         <div className="mt-8">
           {/* Display Pokemon's Evolutions */}
           <Box sx={{ border: 1, borderColor: 'red', borderRadius: 4, padding: 2, marginTop: 4 }}>
-            <h2 className="text-2xl font-bold mb-4">{name.toUpperCase()}'S Evolutions</h2>
+            <Typography variant="h6" sx={{ mb: 2, fontSize: '1.75rem', fontWeight: 'bold' }}>
+              {name.toUpperCase()}'S Evolutions
+            </Typography>
             <div className="flex justify-evenly">
               {evolutionChain.map((stage, index) => (
-                <div key={index} className="flex flex-col items-center mr-4">
-                  <Link to={`/pokemon/${stage.name}`}>
-                    <img src={stage.sprite} alt={`Sprite of ${stage.name}`} className="w-40 h-40 mb-2" />
+                <Card key={index} sx={{ width: 160, m: 1, boxShadow: "0px 2px 4px rgba(0,0,0,0.5)", borderRadius: 4}}>
+                  <Link to={`/pokemon/${stage.name}`} style={{ textDecoration: 'none' }}>
+                    <CardMedia
+                      component="img"
+                      image={stage.sprite}
+                      alt={`Sprite of ${stage.name}`}
+                      sx={{ height: 160, objectFit: 'contain', p: 1 }}
+                    />
+                    <CardContent sx={{ p: 1 }}>
+                      <Typography variant="body2" sx={{ textAlign: 'center' }}>
+                        {stage.name}
+                      </Typography>
+                    </CardContent>
                   </Link>
-                  <p className="text-lg">{stage.name}</p>
-                </div>
+                </Card>
               ))}
             </div>
           </Box>
         </div>
+
         <div className="mt-8">
           {/* Display Pokemon's Top 4 Moves */}
           <Box sx={{ border: 1, borderColor: 'red', borderRadius: 4, padding: 2, marginTop: 4 }}>
