@@ -118,13 +118,14 @@ function Home() {
             >
               <Card
                 className="bg-white shadow-md p-4 rounded-md mb-6 flex flex-col items-center w-72 md:w-96 mr-4 md:mb-4 relative"
-                style={{ borderColor: '#C22E28', borderWidth: '1px', borderStyle: 'solid' }}
+                style={{ borderWidth: '1px', borderStyle: 'solid', boxShadow: "0px 2px 4px rgba(0,0,0,0.5)" }}
               >
                 <CardContent>
                   <Typography
                     variant="h5"
                     component="h2"
-                    className="text-xl font-bold text-center mb-2 font-poppins"
+                    className="text-xl font-bold text-center mb-2"
+                    style={{textTransform: "uppercase"}}
                   >
                     {pokemon.name}
                   </Typography>
