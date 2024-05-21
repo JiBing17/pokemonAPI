@@ -1,20 +1,20 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { Link } from "react-router-dom";
-import { Card, CardContent, Typography, Button, Box } from "@mui/material";
-import { NavigateBefore, NavigateNext } from "@mui/icons-material";
-import Header from "./Header";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { Link, useLocation } from 'react-router-dom';
+import { Card, CardContent, Typography, Button, Box } from '@mui/material';
+import { NavigateBefore, NavigateNext } from '@mui/icons-material';
+import Header from './Header';
 
 // API URL for the backend
 const BASE_URL = "http://localhost:5000/api";
 const POKEMON_URL = BASE_URL + "/pokemon";
 
 function Home() {
-  // State variables to store relevant data
   const [pokemonData, setPokemonData] = useState([]);
   const [pokemonImages, setPokemonImages] = useState({});
   const [error, setError] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
+  const location = useLocation();
+  const [currentPage, setCurrentPage] = useState(location.state?.page || 1);
   const [totalPages, setTotalPages] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredPokemonData, setFilteredPokemonData] = useState([]);
@@ -33,18 +33,7 @@ function Home() {
     fetchData();
   }, [currentPage]);
 
-  // Function to fetch Pokemon image given its URL
-  const getPokemonImage = async (url) => {
-    try {
-      const response = await axios.get(url);
-      return response.data.sprites.front_default;
-    } catch (error) {
-      console.error("Error fetching Pokemon image:", error);
-      return null;
-    }
-  };
-
-  // Fetch Pokemon images when Pokemon data changes
+  // Fetch Pokemon images from the backend
   useEffect(() => {
     const fetchPokemonImages = async () => {
       const images = {};
@@ -57,7 +46,18 @@ function Home() {
     fetchPokemonImages();
   }, [pokemonData]);
 
-  // Update pokemon data when data / search bar changes
+  // Fetch a single Pokemon image given its URL
+  const getPokemonImage = async (url) => {
+    try {
+      const response = await axios.get(url);
+      return response.data.sprites.front_default;
+    } catch (error) {
+      console.error("Error fetching Pokemon image:", error);
+      return null;
+    }
+  };
+
+  // Update filtered Pokemon data when search query or Pokemon data changes
   useEffect(() => {
     setFilteredPokemonData(
       pokemonData.filter(
@@ -66,32 +66,33 @@ function Home() {
     );
   }, [pokemonData, searchQuery]);
 
-  // Handlers for navigating pages
+  // Handle previous page button click
   const handlePrevPage = () => {
     setCurrentPage((currPage) => Math.max(currPage - 1, 1));
     setSearchQuery("");
   };
+
+  // Handle next page button click
   const handleNextPage = () => {
     setCurrentPage((currPage) => Math.min(currPage + 1, totalPages));
     setSearchQuery("");
   };
 
-  // Handlers for search bar change
+  // Handle search input change
   const handleSearchInputChange = (event) => {
     setSearchQuery(event.target.value);
   };
 
-  // Render error message if there's an error
   if (error) {
     return <div>Error: {error.message}</div>;
   }
 
-  // Render loading message if data is still loading
   if (!pokemonData.length) {
     return <div>Loading...</div>;
   }
 
-  // Render the Pokemon data, images, and pagination controls
+  console.log("currpage", currentPage);
+
   return (
     <div>
       <Header />
@@ -107,9 +108,18 @@ function Home() {
         </div>
         <div className="flex flex-wrap justify-center">
           {filteredPokemonData.map((pokemon, index) => (
-            <Link to={`/pokemon/${pokemon.name}`} key={index} className="text-black no-underline">
-              <Card className="bg-white shadow-md p-4 rounded-md mb-6 flex flex-col items-center w-72 md:w-96 mr-4 md:mb-4 relative" 
-              style={{ borderColor: '#C22E28', borderWidth: '1px', borderStyle: 'solid' }}>
+            <Link
+              to={{
+                pathname: `/pokemon/${pokemon.name}`,
+              }}
+              state={{ fromPage: currentPage }} // store current pagination page number for back reference
+              key={index}
+              className="text-black no-underline"
+            >
+              <Card
+                className="bg-white shadow-md p-4 rounded-md mb-6 flex flex-col items-center w-72 md:w-96 mr-4 md:mb-4 relative"
+                style={{ borderColor: '#C22E28', borderWidth: '1px', borderStyle: 'solid' }}
+              >
                 <CardContent>
                   <Typography
                     variant="h5"
@@ -125,7 +135,6 @@ function Home() {
                       className="mt-2 w-32 h-32 object-contain"
                     />
                   )}
-                  {/* Render Pokemon index */}
                   <Typography
                     variant="body2"
                     color="textSecondary"
@@ -146,11 +155,11 @@ function Home() {
             disabled={currentPage === 1}
             startIcon={<NavigateBefore />}
             style={{
-              backgroundColor: '#C22E28',  // Pokémon red color
+              backgroundColor: '#C22E28',
               color: 'white',
-              minWidth: '100px',  // Set min / max width for equal sizing
-              maxWidth: '150px',  
-              flex: 1,           
+              minWidth: '100px',
+              maxWidth: '150px',
+              flex: 1,
             }}
             variant="contained"
           >
@@ -161,11 +170,11 @@ function Home() {
             disabled={currentPage === totalPages}
             endIcon={<NavigateNext />}
             style={{
-              backgroundColor: '#C22E28',  // Pokémon red color
+              backgroundColor: '#C22E28',
               color: 'white',
-              minWidth: '100px',  // Set min / max width for equal sizing
-              maxWidth: '150px',  
-              flex: 1,            
+              minWidth: '100px',
+              maxWidth: '150px',
+              flex: 1,
             }}
             variant="contained"
           >

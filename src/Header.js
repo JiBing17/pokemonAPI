@@ -16,7 +16,7 @@ function Header() {
         setIsAuthenticated(false);
         navigate('/login');
     };
-
+    
     return (
         <AppBar position="fixed" style={{ background: '#C22E28' }}>  
             <Toolbar>

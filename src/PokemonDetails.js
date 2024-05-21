@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams, Link } from "react-router-dom";
+import { useParams, useNavigate, useLocation, Link } from "react-router-dom";
 import { Grid, Card, CardContent, CardMedia, Chip, Button, Box, LinearProgress, Typography } from "@mui/material";
 import Header from "./Header";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 // API URL for the backend
 const BASE_URL = "http://localhost:5000/api";
@@ -10,6 +11,8 @@ const POKEMON_URL = BASE_URL + "/pokemon";
 
 function PokemonDetails() {
   const { pokemonName } = useParams(); // Access URL parameters using useParams
+  const navigate = useNavigate();
+  const location = useLocation();
 
   // State variables to store relevant data
   const [pokemonDetails, setPokemonDetails] = useState(null);
@@ -70,11 +73,17 @@ function PokemonDetails() {
     return stages;
   };
 
+  const handleBack = () => {
+    // Navigate back to Home with the last known page state
+    navigate('/', { state: { page: location.state?.fromPage|| 1 } });
+  };
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
   if (!pokemonDetails) return <div>Pokemon details not found.</div>;
 
   const { name, sprites, stats, types, id } = pokemonDetails;
+
   const typeColors = {
     normal: "#A8A878", fighting: "#C03028", flying: "#A890F0", poison: "#A040A0",
     ground: "#E0C068", rock: "#B8A038", bug: "#A8B820", ghost: "#705898",
@@ -85,8 +94,12 @@ function PokemonDetails() {
 
   return (
     <div>
-      <Header/>
+      <Header />
       <div className="container mx-auto px-4 pt-20 mt-10">
+        {/** Button used to return to previous pagination page**/}
+        <Button startIcon={<ArrowBackIcon />} onClick={handleBack} sx={{ mb: 2 }}>
+          Back
+        </Button>
         <div className="flex justify-center">
           {/* Display Pokemon's Name and Picture */}
           <Card sx={{ width: 400, borderRadius: 4, boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)", position: "relative"}}>
@@ -178,7 +191,6 @@ function PokemonDetails() {
       </div>
     </div>
   );
-  
 }
 
 export default PokemonDetails;
