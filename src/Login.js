@@ -12,17 +12,21 @@ function Login() {
 
     const handleLogin = async () => {
         try {
+            // Makes an asynchronous POST request to the login endpoint of the backend API
             const response = await axios.post('http://localhost:5000/api/users/login', { username, password });
+
+            // Successfull request, set user as authenticated and redirect to homes page
             if (response.status === 200) {
                 setIsAuthenticated(true);
-                navigate('/'); // Redirect to home after login
+                navigate('/');
             }
+            // Sends alert due to unsuccessfull request for login
         } catch (error) {
             alert('Login failed! ' + (error.response?.data?.message || ''));
             console.error('Login error:', error);
         }
     };
-
+    // Login Form
     return (
         <Container maxWidth="sm">
             <Box sx={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>

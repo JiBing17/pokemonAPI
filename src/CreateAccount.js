@@ -14,6 +14,7 @@ function CreateAccount() {
 
     // Function handles registration form submission
     const handleRegister = async () => {
+
         // Check if username or password is empty
         if (!username || !password) {
             setError('Both fields are required.');
@@ -21,16 +22,17 @@ function CreateAccount() {
         }
 
         try {
-            // Attempt to register the user with the provided username and password
+            // Makes an asynchronous POST request to the register endpoint of the backend API
             await axios.post('http://localhost:5000/api/users/register', { username, password });
             alert('Account created successfully!');
-            navigate('/login');  
+            navigate('/login');  // Takes user back to login Page to login the newly created account
+
         } catch (err) {
             setError(err.response.data || 'Failed to create account.');
         }
     };
 
-    // Render the registration form
+    // Create Account Form
     return (
         <Container maxWidth="sm">
             <Box sx={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
