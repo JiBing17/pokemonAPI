@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link, useLocation } from 'react-router-dom';
 import { Card, CardContent, Typography, Button, Box } from '@mui/material';
-import { NavigateBefore, NavigateNext } from '@mui/icons-material';
+import { NavigateBefore, NavigateNext , Favorite, FavoriteBorder} from '@mui/icons-material';
 import Header from './Header';
 
 // API URL for the backend
@@ -18,6 +18,7 @@ function Home() {
   const [totalPages, setTotalPages] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredPokemonData, setFilteredPokemonData] = useState([]);
+  const [favorites, setFavorites] = useState(JSON.parse(localStorage.getItem('favorites')) || {}); 
 
   // Fetch Pokemon data from the backend
   useEffect(() => {
@@ -83,6 +84,17 @@ function Home() {
     setSearchQuery(event.target.value);
   };
 
+  // Reverse value that corresponds with the passed down name (key)
+  const toggleFavorite = (name) => {
+    const newFavorites = {
+      ...favorites,
+      [name]: !favorites[name]
+    };
+    // Update both state and local storage with the new changes
+    setFavorites(newFavorites);
+    localStorage.setItem('favorites', JSON.stringify(newFavorites));
+  };
+
   if (error) {
     return <div>Error: {error.message}</div>;
   }
@@ -120,6 +132,15 @@ function Home() {
                 className="bg-white shadow-md p-4 rounded-md mb-6 flex flex-col items-center w-72 md:w-96 mr-4 md:mb-4 relative"
                 style={{ borderWidth: '1px', borderStyle: 'solid', boxShadow: "0px 2px 4px rgba(0,0,0,0.5)" }}
               >
+                <Button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    toggleFavorite(pokemon.name);
+                  }}
+                  sx={{ position: 'absolute', top: 8, left: 8 }}
+                >
+                  {favorites[pokemon.name] ? <Favorite color="error" /> : <FavoriteBorder />}
+                </Button>
                 <CardContent>
                   <Typography
                     variant="h5"

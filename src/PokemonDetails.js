@@ -4,6 +4,7 @@ import { useParams, useNavigate, useLocation, Link } from "react-router-dom";
 import { Grid, Card, CardContent, CardMedia, Chip, Button, Box, LinearProgress, Typography } from "@mui/material";
 import Header from "./Header";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { Favorite, FavoriteBorder } from '@mui/icons-material';
 
 // API URL for the backend
 const BASE_URL = "http://localhost:5000/api";
@@ -21,6 +22,8 @@ function PokemonDetails() {
   const [evolutionChain, setEvolutionChain] = useState([]);
   const [moves, setMoves] = useState([]);
   const [about, setAbout] = useState(""); 
+  const [favorites, setFavorites] = useState(JSON.parse(localStorage.getItem('favorites')) || {});
+
 
   // Fetch Pokemon details from the backend
   useEffect(() => {
@@ -77,7 +80,14 @@ function PokemonDetails() {
     // Navigate back to Home with the last known page state
     navigate('/', { state: { page: location.state?.fromPage|| 1 } });
   };
-
+  const toggleFavorite = () => {
+    const newFavorites = {
+      ...favorites,
+      [pokemonName]: !favorites[pokemonName]
+    };
+    setFavorites(newFavorites);
+    localStorage.setItem('favorites', JSON.stringify(newFavorites));
+  };
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
   if (!pokemonDetails) return <div>Pokemon details not found.</div>;
@@ -103,6 +113,12 @@ function PokemonDetails() {
         <div className="flex justify-center">
           {/* Display Pokemon's Name and Picture */}
           <Card sx={{ width: 400, borderRadius: 4, boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)", position: "relative"}}>
+            <Button
+              onClick={toggleFavorite}
+              sx={{ position: 'absolute', top: 8, left: 8 }}
+            >
+              {favorites[pokemonName] ? <Favorite color="error" /> : <FavoriteBorder />}
+            </Button>
             <CardContent>
               {/* Display Pokemon's Name */}
               <Typography variant="h5" component="div" gutterBottom style={{textAlign: 'center'}}>
