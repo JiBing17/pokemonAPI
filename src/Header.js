@@ -29,6 +29,9 @@ function Header() {
                 <Button color="inherit" onClick={handleLogout}>
                     Logout
                 </Button>
+                <Box component={Link} to="/pokemon/favorites" sx={{ textDecoration: 'none', color: 'inherit', ml: 2 }}>
+                    Favorites
+                </Box>
             </Toolbar>
         </AppBar>
     );

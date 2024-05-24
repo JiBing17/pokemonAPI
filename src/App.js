@@ -5,6 +5,7 @@ import PokemonDetails from './PokemonDetails';
 import Login from './Login';
 import CreateAccount from './CreateAccount';
 import { AuthProvider, useAuth } from './AuthContext';
+import Favorites from './Favorites';
 
 // ensures that only authenticated users can access the route
 function PrivateRoute({ children }) {
@@ -25,6 +26,8 @@ function App() {
                     {/** Only if boolean value isAuthenicated is true will these bottom 2 routes be available**/}
                     <Route path="/" element={<PrivateRoute><Home /></PrivateRoute>} />
                     <Route path="/pokemon/:pokemonName" element={<PrivateRoute><PokemonDetails /></PrivateRoute>} />
+                    <Route path="/pokemon/favorites" element={<PrivateRoute><Favorites /></PrivateRoute>} />
+
                 </Routes>
             </Router>
         </AuthProvider>
