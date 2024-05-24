@@ -175,32 +175,34 @@ function Home() {
           ))}
         </div>
         {/* Pagination controls */}
-        <Box display="flex" justifyContent="center" mt={4} gap={2}>
+        <Box sx={{ position: 'fixed', top: '50%', transform: 'translateY(-50%)', left: 0, zIndex: 1000, ml:2 }}>
           <Button
             onClick={handlePrevPage}
             disabled={currentPage === 1}
             startIcon={<NavigateBefore />}
-            style={{
-              backgroundColor: '#C22E28',
-              color: 'white',
-              minWidth: '100px',
-              maxWidth: '150px',
-              flex: 1,
+            sx={{
+                backgroundColor: '#C22E28',
+                color: 'white',
+                '&:disabled': {
+                    backgroundColor: 'rgba(194, 46, 40, 0.5)'
+                }
             }}
             variant="contained"
           >
             Previous
           </Button>
+        </Box>
+        <Box sx={{ position: 'fixed', top: '50%', transform: 'translateY(-50%)', right: 0, zIndex: 1000, mr:2 }}>
           <Button
             onClick={handleNextPage}
             disabled={currentPage === totalPages}
             endIcon={<NavigateNext />}
-            style={{
-              backgroundColor: '#C22E28',
-              color: 'white',
-              minWidth: '100px',
-              maxWidth: '150px',
-              flex: 1,
+            sx={{
+                backgroundColor: '#C22E28',
+                color: 'white',
+                '&:disabled': {
+                    backgroundColor: 'rgba(194, 46, 40, 0.5)'
+                }
             }}
             variant="contained"
           >

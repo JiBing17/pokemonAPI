@@ -41,7 +41,7 @@ function PokemonDetails() {
         setEvolutionChain(parseEvolutionChain(evolutionChainResponse.data));
 
         // Fetch the first 4 Pokémon moves
-        const movesUrl = response.data.moves.slice(0, 4).map(move => move.move.name);
+        const movesUrl = response.data.moves.slice(0, 4).map(move => move.move.name.replace("-", " "));
         setMoves(movesUrl);
 
         // Fetch Pokémon description from species data
