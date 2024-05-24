@@ -175,39 +175,53 @@ function Home() {
           ))}
         </div>
         {/* Pagination controls */}
-        <Box sx={{ position: 'fixed', top: '50%', transform: 'translateY(-50%)', left: 0, zIndex: 1000, ml:2 }}>
+        <Box sx={{
+            position: 'fixed', 
+            top: '50%', 
+            transform: 'translateY(-50%)', 
+            left: 0, 
+            zIndex: 1000, 
+            ml: { xs: 1, sm: 2 }  
+        }}>
           <Button
             onClick={handlePrevPage}
             disabled={currentPage === 1}
-            startIcon={<NavigateBefore />}
             sx={{
                 backgroundColor: '#C22E28',
                 color: 'white',
                 '&:disabled': {
                     backgroundColor: 'rgba(194, 46, 40, 0.5)'
-                }
+                },
+                minWidth: { xs: '30px', sm: '40px' }, 
+                padding: { xs: '6px 8px', sm: '8px 16px' }  
             }}
             variant="contained"
-          >
-            Previous
-          </Button>
+            startIcon={<NavigateBefore />}
+          />
         </Box>
-        <Box sx={{ position: 'fixed', top: '50%', transform: 'translateY(-50%)', right: 0, zIndex: 1000, mr:2 }}>
+        <Box sx={{
+            position: 'fixed', 
+            top: '50%', 
+            transform: 'translateY(-50%)', 
+            right: 0, 
+            zIndex: 1000, 
+            mr: { xs: 1, sm: 2 }  
+        }}>
           <Button
             onClick={handleNextPage}
             disabled={currentPage === totalPages}
-            endIcon={<NavigateNext />}
             sx={{
                 backgroundColor: '#C22E28',
                 color: 'white',
                 '&:disabled': {
                     backgroundColor: 'rgba(194, 46, 40, 0.5)'
-                }
+                },
+                minWidth: { xs: '30px', sm: '40px' },  
+                padding: { xs: '6px 8px', sm: '8px 16px' } 
             }}
             variant="contained"
-          >
-            Next
-          </Button>
+            endIcon={<NavigateNext />}
+          />
         </Box>
       </div>
     </div>
