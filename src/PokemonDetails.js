@@ -81,14 +81,18 @@ function PokemonDetails() {
     navigate('/', { state: { page: location.state?.fromPage|| 1 } });
   };
   
-  // Reverse value that corresponds with the passed down name (key)
-  const toggleFavorite = () => {
-    const newFavorites = {
-      ...favorites,
-      [pokemonName]: !favorites[pokemonName]
-    };
-    setFavorites(newFavorites);
-    localStorage.setItem('favorites', JSON.stringify(newFavorites));
+  const toggleFavorite = (name) => {
+    const updatedFavorites = { ...favorites };
+  
+    if (favorites[name]) {
+      // If it's currently a favorite, remove it.
+      delete updatedFavorites[name];
+    } else {
+      // If it's not a favorite, add it.
+      updatedFavorites[name] = true;
+    }
+    setFavorites(updatedFavorites);
+    localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
   };
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;

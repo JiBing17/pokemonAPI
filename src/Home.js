@@ -84,15 +84,19 @@ function Home() {
     setSearchQuery(event.target.value);
   };
 
-  // Reverse value that corresponds with the passed down name (key)
   const toggleFavorite = (name) => {
-    const newFavorites = {
-      ...favorites,
-      [name]: !favorites[name]
-    };
-    // Update both state and local storage with the new changes
-    setFavorites(newFavorites);
-    localStorage.setItem('favorites', JSON.stringify(newFavorites));
+    const updatedFavorites = { ...favorites };
+  
+    if (favorites[name]) {
+      // If it's currently a favorite, remove it.
+      delete updatedFavorites[name];
+    } else {
+      // If it's not a favorite, add it.
+      updatedFavorites[name] = true;
+    }
+  
+    setFavorites(updatedFavorites);
+    localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
   };
 
   if (error) {
