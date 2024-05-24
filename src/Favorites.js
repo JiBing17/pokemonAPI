@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom'; 
 import { Card, CardContent, Typography, Button, Grid } from '@mui/material';
 import { Favorite } from '@mui/icons-material';
 import Header from './Header';
@@ -9,7 +10,7 @@ const BASE_URL = "http://localhost:5000/api";
 const POKEMON_URL = BASE_URL + "/pokemon";
 
 function Favorites() {
-  // State for storing the list of favorite Pokemon and their details
+  // State for storing the list of favorite Pokémon and their details
   const [favorites, setFavorites] = useState(JSON.parse(localStorage.getItem('favorites')) || {});
   const [pokemonDetails, setPokemonDetails] = useState({});
 
@@ -19,7 +20,6 @@ function Favorites() {
       const details = {};
       for (const name in favorites) {
         try {
-          // Fetching individual Pokemon details from the API using key (name) and url for axios request
           const response = await axios.get(`${POKEMON_URL}/${name}`);
           details[name] = response.data;
         } catch (error) {
@@ -32,7 +32,7 @@ function Favorites() {
     fetchDetails();
   }, [favorites]);
 
-  // Function to toggle the favorite status of a Pokémon
+  // Function to remove a Pokémon from favorites
   const removeFavorite = (name) => {
     const updatedFavorites = { ...favorites };
     // remove key and value pair of the passed in name (key) and update
@@ -53,30 +53,36 @@ function Favorites() {
         {Object.keys(favorites).filter(name => favorites[name]).map((name, index) => (
           <Grid item key={index} xs={12} sm={6} md={4} lg={3}>
             <Card className="bg-white shadow-md rounded-md">
-              <CardContent>
-                {/* Pokémon name displayed as card title */}
-                <Typography variant="h6" component="h2" className="text-center">
-                  {name.toUpperCase()}
-                </Typography>
-                {/* Display Pokémon image */}
-                {pokemonDetails[name] && (
-                  <img
-                    src={pokemonDetails[name].sprites.front_default}
-                    alt={`Image of ${name}`}
-                    className="w-full"
-                    style={{ height: '200px', objectFit: 'contain' }}
-                  />
-                )}
-                {/* Button to remove Pokémon from favorites */}
-                <Button
-                  fullWidth
-                  onClick={() => removeFavorite(name)}
-                  startIcon={<Favorite color="error" />}
-                  sx={{ mt: 2 }}
-                >
-                  Remove
-                </Button>
-              </CardContent>
+              <Link to={`/pokemon/${name}`} style={{ textDecoration: 'none'}}> {/* Make card a link */}
+                <CardContent>
+                  {/* Pokémon name displayed as card title */}
+                  <Typography variant="h6" component="h2" className="text-center">
+                    {name.toUpperCase()}
+                  </Typography>
+                  {/* Display Pokémon image */}
+                  {pokemonDetails[name] && (
+                    <img
+                      src={pokemonDetails[name].sprites.front_default}
+                      alt={`Image of ${name}`}
+                      className="w-full"
+                      style={{ height: '200px', objectFit: 'contain' }}
+                    />
+                  )}
+                </CardContent>
+              </Link>
+              {/* Button to remove Pokémon from favorites */}
+              <Button
+                fullWidth
+                onClick={(e) => {
+                  // Prevent link navigation when clicking the button
+                  e.stopPropagation(); 
+                  removeFavorite(name);
+                }}
+                startIcon={<Favorite color="error" />}
+                sx={{ mt: 2 }}
+              >
+                Remove
+              </Button>
             </Card>
           </Grid>
         ))}
