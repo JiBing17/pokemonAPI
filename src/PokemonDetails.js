@@ -83,13 +83,15 @@ function PokemonDetails() {
   
   const toggleFavorite = (name) => {
     const updatedFavorites = { ...favorites };
-  
+    console.log("f before : ", favorites)
+
     if (favorites[name]) {
       delete updatedFavorites[name]; // If it's currently a favorite, remove it.
     } else {
       updatedFavorites[name] = true; // If it's not a favorite, add it.
     }
     setFavorites(updatedFavorites);
+    console.log("f after : ", favorites)
     localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
   };
 
@@ -122,7 +124,10 @@ function PokemonDetails() {
           <Card sx={{ width: 400, borderRadius: 4, boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)", position: "relative"}}>
             {/** Favorite Heart Button **/}
             <Button
-              onClick={toggleFavorite}
+              onClick={(e) => {
+                e.preventDefault();
+                toggleFavorite(name);
+              }}
               sx={{ position: 'absolute', top: 8, left: 8 }}
             >
               {favorites[pokemonName] ? <Favorite color="error" /> : <FavoriteBorder />}
