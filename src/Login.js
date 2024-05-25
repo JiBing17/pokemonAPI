@@ -5,10 +5,11 @@ import { useAuth } from './AuthContext';
 import { TextField, Button, Paper, Typography, Container, Box } from '@mui/material';
 
 function Login() {
+    // States used to store username and password
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const { setIsAuthenticated } = useAuth();
-    const navigate = useNavigate();
+    const { setIsAuthenticated } = useAuth(); // Function used for authenticating users when login is successfull
+    const navigate = useNavigate(); // Runction used to navigate different routes (Homes.js if login succeeds)
 
     const handleLogin = async () => {
         try {
@@ -31,9 +32,11 @@ function Login() {
         <Container maxWidth="sm">
             <Box sx={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <Paper sx={{ padding: 4, width: '100%', mt: 2 }}>
+                    {/** Login Title **/}
                     <Typography component="h1" variant="h5" textAlign="center">
                         Login
                     </Typography>
+                    {/** Username Field **/}
                     <TextField
                         variant="outlined"
                         margin="normal"
@@ -45,6 +48,7 @@ function Login() {
                         onChange={e => setUsername(e.target.value)}
                         sx={{ mt: 2 }}
                     />
+                    {/** Password Field **/}
                     <TextField
                         variant="outlined"
                         margin="normal"
@@ -56,6 +60,7 @@ function Login() {
                         onChange={e => setPassword(e.target.value)}
                         sx={{ mt: 2 }}
                     />
+                    {/** Submit Login Button **/}
                     <Button
                         type="submit"
                         fullWidth
@@ -66,6 +71,7 @@ function Login() {
                     >
                         Login
                     </Button>
+                    {/** Switch to Create Account Form Link **/}
                     <Link to="/register" style={{ textDecoration: 'none' }}>
                         <Button variant="text">Don't have an account? Sign Up</Button>
                     </Link>

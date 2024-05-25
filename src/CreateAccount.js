@@ -9,8 +9,7 @@ function CreateAccount() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');  
 
-    // Tool used for navigation across routes
-    const navigate = useNavigate(); 
+    const navigate = useNavigate(); // Tool used for navigation across routes (Used to go to Login Route after new account is created)
 
     // Function handles registration form submission
     const handleRegister = async () => {
@@ -28,7 +27,8 @@ function CreateAccount() {
             navigate('/login');  // Takes user back to login Page to login the newly created account
 
         } catch (err) {
-            setError(err.response.data || 'Failed to create account.');
+            setError(err.response.data || 'Failed to create account.'); // Sets error if any that will display at bottom of form
+
         }
     };
 
@@ -37,9 +37,11 @@ function CreateAccount() {
         <Container maxWidth="sm">
             <Box sx={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <Paper sx={{ padding: 4, width: '100%', mt: 2 }}>
+                    {/** Create Account Title **/}
                     <Typography component="h1" variant="h5" textAlign="center">
                         Create Account
                     </Typography>
+                    {/** Create Username Field **/}
                     <TextField
                         variant="outlined"
                         margin="normal"
@@ -51,6 +53,7 @@ function CreateAccount() {
                         onChange={e => setUsername(e.target.value)}
                         sx={{ mt: 2 }}
                     />
+                    {/** Create Password Field **/}
                     <TextField
                         variant="outlined"
                         margin="normal"
@@ -62,6 +65,7 @@ function CreateAccount() {
                         onChange={e => setPassword(e.target.value)}
                         sx={{ mt: 2 }}
                     />
+                    {/** Submit to Create New User Button **/}
                     <Button
                         type="submit"
                         fullWidth
@@ -72,6 +76,7 @@ function CreateAccount() {
                     >
                         Sign Up
                     </Button>
+                    {/** Switch to Create Account Form Link**/}
                     {error && <Typography color="error" textAlign="center">{error}</Typography>}
                     <Link to="/login" style={{ textDecoration: 'none' }}>
                         <Button variant="text">Already have an account? Log In</Button>

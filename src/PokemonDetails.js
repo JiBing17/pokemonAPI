@@ -77,7 +77,7 @@ function PokemonDetails() {
   };
 
   const handleBack = () => {
-    // Navigate back to Home with the last known page state
+    // Navigate back to Home with the last known page state (default : 1)
     navigate('/', { state: { page: location.state?.fromPage|| 1 } });
   };
   
@@ -85,21 +85,22 @@ function PokemonDetails() {
     const updatedFavorites = { ...favorites };
   
     if (favorites[name]) {
-      // If it's currently a favorite, remove it.
-      delete updatedFavorites[name];
+      delete updatedFavorites[name]; // If it's currently a favorite, remove it.
     } else {
-      // If it's not a favorite, add it.
-      updatedFavorites[name] = true;
+      updatedFavorites[name] = true; // If it's not a favorite, add it.
     }
     setFavorites(updatedFavorites);
     localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
   };
+
+  // Error rendering 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
   if (!pokemonDetails) return <div>Pokemon details not found.</div>;
 
-  const { name, sprites, stats, types, id } = pokemonDetails;
+  const { name, sprites, stats, types, id } = pokemonDetails; // Destructure PokemonDetails state
 
+  // Static types for their corresponding colors
   const typeColors = {
     normal: "#A8A878", fighting: "#C03028", flying: "#A890F0", poison: "#A040A0",
     ground: "#E0C068", rock: "#B8A038", bug: "#A8B820", ghost: "#705898",
@@ -205,7 +206,6 @@ function PokemonDetails() {
             </div>
           </Box>
         </div>
-
         <div className="mt-8">
           {/* Display Pokemon's Moves */}
           <Box sx={{ border: 1, borderColor: 'red', borderRadius: 4, padding: 2, marginTop: 4 }}>

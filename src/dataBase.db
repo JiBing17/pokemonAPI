@@ -1,0 +1,14 @@
+const sqlite3 = require('sqlite3').verbose();
+const db = new sqlite3.Database('./myapp.db', (err) => {
+  if (err) {
+    console.error('Error opening database ' + err.message);
+  } else {
+    db.run('CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, password TEXT)', (err) => {
+      if (err) {
+        console.error("Table already exists.");
+      } else {
+        console.log("Table created");
+      }
+    });
+  }
+});
