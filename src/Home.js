@@ -4,6 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Card, CardContent, Typography, Button, Box } from '@mui/material';
 import { NavigateBefore, NavigateNext , Favorite, FavoriteBorder} from '@mui/icons-material';
 import Header from './Header';
+import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 
 // API URL for the backend
 const BASE_URL = "http://localhost:5000/api";
@@ -19,6 +20,7 @@ function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredPokemonData, setFilteredPokemonData] = useState([]);
   const [favorites, setFavorites] = useState(JSON.parse(localStorage.getItem('favorites')) || {}); 
+  const [sortOrder, setSortOrder] = useState('order'); 
 
   // Fetch Pokemon data from the backend
   useEffect(() => {
@@ -58,14 +60,20 @@ function Home() {
     }
   };
 
-  // Update filtered Pokemon data when search query or Pokemon data changes
   useEffect(() => {
-    setFilteredPokemonData(
-      pokemonData.filter(
-        (pokemon) => pokemon.name.toLowerCase().startsWith(searchQuery.toLowerCase())
-      )
+
+    // Filtered by search first
+    let filtered = pokemonData.filter(pokemon =>
+      pokemon.name.toLowerCase().startsWith(searchQuery.toLowerCase())
     );
-  }, [pokemonData, searchQuery]);
+    // Sort by name if that option is chosen
+    if (sortOrder === 'name') {
+      filtered = filtered.sort((a, b) => a.name.localeCompare(b.name));
+    }
+    // Default sort : Pokedex Order
+  
+    setFilteredPokemonData(filtered);
+  }, [pokemonData, searchQuery, sortOrder]);
 
   // Handle previous page button click
   const handlePrevPage = () => {
@@ -106,9 +114,6 @@ function Home() {
   if (!pokemonData.length) {
     return <div>Loading...</div>;
   }
-
-  console.log("currpage", currentPage);
-
   return (
     <div>
       <Header />
@@ -121,6 +126,19 @@ function Home() {
             onChange={handleSearchInputChange}
             className="px-4 py-2 border border-gray-300 rounded-md w-full md:w-64"
           />
+          <FormControl variant="outlined" sx={{ m: 1, minWidth: 120 }}>
+            <InputLabel id="sort-label">Sort By</InputLabel>
+            <Select
+              labelId="sort-label"
+              id="sort-select"
+              value={sortOrder}
+              label="Sort By"
+              onChange={(e) => setSortOrder(e.target.value)}
+            >
+              <MenuItem value="index">Order</MenuItem>
+              <MenuItem value="name">Name</MenuItem>
+            </Select>
+          </FormControl>
         </div>
         <div className="flex flex-wrap justify-center">
           {filteredPokemonData.map((pokemon, index) => (
