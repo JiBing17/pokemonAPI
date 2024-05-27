@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import { Card, CardContent, Typography, Button, Grid, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { Card, CardContent, Typography, Button, Grid, FormControl, InputLabel, Select, MenuItem, Box } from '@mui/material';
 import { Favorite } from '@mui/icons-material';
 import Header from './Header';
 
@@ -54,34 +54,42 @@ function Favorites() {
     <div>
       {/* Header component for the page */}
       <Header />
-      {/* Page title */}
-      <Typography variant="h4" component="h1" sx={{ textAlign: 'center', mt: 10, mb: 4 }}>
-        Favorites
-      </Typography>
-      {/* Dropdown to select the sort order */}
-      <FormControl variant="outlined" sx={{ m: 2, minWidth: 150, margin: 'auto' }}>
-        <InputLabel id="sort-label">Sort By</InputLabel> {/* Dropdown Title */}
-        {/* Dropdown Box */}
-        <Select 
-          labelId="sort-label"
-          id="sort-select"
-          value={sortOrder}
-          onChange={(e) => setSortOrder(e.target.value)}
-          label="Sort By"
-        >
-          {/* Drop down items */}
-          <MenuItem value="recent">Most Recent</MenuItem>
-          <MenuItem value="asc">Name Ascending</MenuItem>
-          <MenuItem value="desc">Name Descending</MenuItem>
-        </Select>
-      </FormControl>
+      <Box sx={{
+          display: 'flex',
+          flexDirection: 'column',  
+          alignItems: 'center',     
+          width: '100%',           
+          mt: 10
+        }}>
+        {/* Page title */}
+        <Typography variant="h4" component="h1" sx={{ mb: 4, textAlign: 'center' }}>
+            Favorites
+        </Typography>
+        {/* Dropdown to select the sort order */}
+        <FormControl variant="outlined" sx={{ minWidth: 150 }}>
+            <InputLabel id="sort-label">Sort By</InputLabel> {/* Dropdown Title */}
+            {/* Dropdown Box */}
+            <Select 
+                labelId="sort-label"
+                id="sort-select"
+                value={sortOrder}
+                onChange={(e) => setSortOrder(e.target.value)}
+                label="Sort By"
+            >
+                {/* Drop down items */}
+                <MenuItem value="recent">Most Recent</MenuItem>
+                <MenuItem value="asc">Name Ascending</MenuItem>
+                <MenuItem value="desc">Name Descending</MenuItem>
+            </Select>
+        </FormControl>
+      </Box>
   
       {/* Grid container for responsive card layout */}
-      <Grid container spacing={2} justifyContent="center" sx={{ px: 3 }}>
+      <Grid container spacing={2} justifyContent="center" sx={{ px: 3, py:3 }}>
         {sortedFavorites.map((name, index) => (
           <Grid item key={index} xs={12} sm={6} md={4} lg={3}>
             {/* Card for each favorite Pokemon */}
-            <Card className="bg-white shadow-md rounded-md">
+            <Card className="bg-white shadow-md rounded-md" sx={{boxShadow: "0px 2px 4px rgba(0,0,0,0.5)"}}>
               {/* Link to navigate to the PokemonDetails page */}
               <Link to={`/pokemon/${name}`} style={{ textDecoration: 'none' }}>
                 <CardContent>
