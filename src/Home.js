@@ -67,8 +67,12 @@ function Home() {
       pokemon.name.toLowerCase().startsWith(searchQuery.toLowerCase())
     );
     // Sort by name if that option is chosen
-    if (sortOrder === 'name') {
+    if (sortOrder === 'Name Ascending') {
       filtered = filtered.sort((a, b) => a.name.localeCompare(b.name));
+    }
+    // Sort by name if that option is chosen
+    if (sortOrder === 'Name Descending') {
+      filtered = filtered.sort((a, b) => b.name.localeCompare(a.name));
     }
     // Default sort : Pokedex Order
   
@@ -135,8 +139,10 @@ function Home() {
               label="Sort By"
               onChange={(e) => setSortOrder(e.target.value)}
             >
-              <MenuItem value="index">Order</MenuItem>
-              <MenuItem value="name">Name</MenuItem>
+              <MenuItem value="index">Index Order</MenuItem>
+              <MenuItem value="Name Ascending">Name Ascending</MenuItem>
+              <MenuItem value="Name Descending">Name Descending</MenuItem>
+
             </Select>
           </FormControl>
         </div>
