@@ -21,7 +21,7 @@ function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredPokemonData, setFilteredPokemonData] = useState([]);
   const [favorites, setFavorites] = useState(JSON.parse(localStorage.getItem('favorites')) || {}); 
-  const [sortOrder, setSortOrder] = useState('order'); 
+  const [sortOrder, setSortOrder] = useState('Index Order'); 
 
   // Fetch Pokemon data from the backend each time curent page state changes
   useEffect(() => {
@@ -144,9 +144,9 @@ function Home() {
               onChange={(e) => setSortOrder(e.target.value)} // Sets sort order when changes are made to dropdown box
             >
               {/* Sort Dropdown Options */}
-              <MenuItem value="index">Index Order</MenuItem>
-              <MenuItem value="name-asc">Name Ascending</MenuItem>
-              <MenuItem value="name-desc">Name Descending</MenuItem>
+              <MenuItem value="Index Order">Index Order</MenuItem>
+              <MenuItem value="Name Ascending">Name Ascending</MenuItem>
+              <MenuItem value="Name Descending">Name Descending</MenuItem>
             </Select>
           </FormControl>
         </div>
