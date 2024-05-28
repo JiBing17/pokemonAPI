@@ -142,6 +142,16 @@ function PokemonDetails() {
     if (value <= 75) return '#ffeb3b'; // Yellow color for values between 50 and 75
     return '#4caf50'; // Green color for values above 75
   };
+
+  // Helper function to truncate text to 100 words with an ellipsis
+  const truncateDescription = (text) => {
+    const words = text.split(' '); // Split text into an array of words
+    if (words.length > 50) {
+      return words.slice(0, 50).join(' ') + '...'; // Join the first 100 words with a space and add ellipsis
+    }
+    return text; // Return original text if it's 100 words or less
+  };
+
   return (
     <div>
       <Header />
@@ -249,20 +259,20 @@ function PokemonDetails() {
             <Grid container spacing={2} sx={{ px : 2 , py: 2}}>
               {moves.map((move, index) => (
                 <Grid item xs={12} sm={6} md={4} key={index}>
-                  <Card sx={{ height: '100%' }}>
+                  <Card sx={{ height: '100%', boxShadow: "0px 2px 4px rgba(0,0,0,0.3)", borderRadius: 2 }}>
                     <CardContent>
                       {/* Move name displayed in uppercase */}
                       <Typography variant="h6" component="div">{move.name.toUpperCase()}</Typography>
                       {/* Display move type */}
-                      <Chip label={`Type: ${move.type}`} sx={{ mr: 1, color: "white" ,backgroundColor: typeColors[move.type]}} />
+                      <Chip label={`Type: ${move.type}`} sx={{ mr: 5, color: "white" ,backgroundColor: typeColors[move.type]}} />
                         {/* Display move power, showing 'N/A' if power is null */}
-                      <Chip label={`Power: ${move.power || 'N/A'}`} sx={{ color: "white", backgroundColor: getColorForValue(move.power)}}/>
+                      <Chip label={`Power: ${move.power || 'N/A'}`} sx={{ mr : 1, color: "white", backgroundColor: getColorForValue(move.power)}}/>
                       {/* Display move accuracy, showing 'N/A' if accuracy is null */}
-                      <Chip label={`Accuracy: ${move.accuracy || 'N/A'}`} sx={{ color: "white", backgroundColor: getColorForValue(move.accuracy)}}/>
+                      <Chip label={`Accuracy: ${move.accuracy || 'N/A'}`} sx={{ mr : 1, color: "white", backgroundColor: getColorForValue(move.accuracy)}}/>
                       {/* Display move PP */}
                       <Chip label={`PP: ${move.pp}`} sx={{ color: "white", backgroundColor: "#dddddd" }} />
                       {/* Display a short description of the move's effects */}
-                      <Typography variant="body2">{move.description}</Typography>
+                      <Typography variant="body2">{truncateDescription(move.description)}</Typography>
                     </CardContent>
                   </Card>
                 </Grid>
