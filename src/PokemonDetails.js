@@ -53,7 +53,7 @@ function PokemonDetails() {
           pp: response.data.pp, // Power points of move
           description: response.data.effect_entries.find(entry => entry.language.name === "en")?.effect // Description of move
         }));
-        setMoves(movesDetails.slice(0, 9)); // Display up to 9 moves for now
+        setMoves(movesDetails.slice(0, 50)); // Display up to 9 moves for now
 
         // Fetch Pokémon description from species data
         const speciesDescription = await axios.get(speciesUrl);
@@ -115,13 +115,33 @@ function PokemonDetails() {
 
   // Static types for their corresponding colors
   const typeColors = {
-    normal: "#A8A878", fighting: "#C03028", flying: "#A890F0", poison: "#A040A0",
-    ground: "#E0C068", rock: "#B8A038", bug: "#A8B820", ghost: "#705898",
-    steel: "#B8B8D0", fire: "#F08030", water: "#6890F0", grass: "#78C850",
-    electric: "#F8D030", psychic: "#F85888", ice: "#98D8D8", dragon: "#7038F8",
-    dark: "#705848", fairy: "#EE99AC",
+    normal: '#A8A77A',
+    fire: '#EE8130',
+    water: '#6390F0',
+    electric: '#F7D02C',
+    grass: '#7AC74C',
+    ice: '#96D9D6',
+    fighting: '#C22E28',
+    poison: '#A33EA1',
+    ground: '#E2BF65',
+    flying: '#A98FF3',
+    psychic: '#F95587',
+    bug: '#A6B91A',
+    rock: '#B6A136',
+    ghost: '#735797',
+    dragon: '#6F35FC',
+    dark: '#705746',
+    steel: '#B7B7CE',
+    fairy: '#D685AD',
   };
-
+ 
+  // Color mapping function based on value ranges
+  const getColorForValue = (value) => {
+    if (value === null) return '#cccccc'; // Default color for N/A values
+    if (value < 50) return '#f44336'; // Red color for values under 50
+    if (value <= 75) return '#ffeb3b'; // Yellow color for values between 50 and 75
+    return '#4caf50'; // Green color for values above 75
+  };
   return (
     <div>
       <Header />
@@ -234,13 +254,13 @@ function PokemonDetails() {
                       {/* Move name displayed in uppercase */}
                       <Typography variant="h6" component="div">{move.name.toUpperCase()}</Typography>
                       {/* Display move type */}
-                      <Chip label={`Type: ${move.type}`} sx={{ mr: 1 }} />
+                      <Chip label={`Type: ${move.type}`} sx={{ mr: 1, color: "white" ,backgroundColor: typeColors[move.type]}} />
                         {/* Display move power, showing 'N/A' if power is null */}
-                      <Chip label={`Power: ${move.power || 'N/A'}`} />
+                      <Chip label={`Power: ${move.power || 'N/A'}`} sx={{ color: "white", backgroundColor: getColorForValue(move.power)}}/>
                       {/* Display move accuracy, showing 'N/A' if accuracy is null */}
-                      <Chip label={`Accuracy: ${move.accuracy || 'N/A'}`} />
+                      <Chip label={`Accuracy: ${move.accuracy || 'N/A'}`} sx={{ color: "white", backgroundColor: getColorForValue(move.accuracy)}}/>
                       {/* Display move PP */}
-                      <Chip label={`PP: ${move.pp}`} />
+                      <Chip label={`PP: ${move.pp}`} sx={{ color: "white", backgroundColor: "#dddddd" }} />
                       {/* Display a short description of the move's effects */}
                       <Typography variant="body2">{move.description}</Typography>
                     </CardContent>
