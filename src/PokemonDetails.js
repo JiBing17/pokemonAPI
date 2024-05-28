@@ -40,9 +40,20 @@ function PokemonDetails() {
         const evolutionChainResponse = await axios.get(evolutionChainUrl);
         setEvolutionChain(parseEvolutionChain(evolutionChainResponse.data));
 
-        // Fetch the first 4 Pokémon moves
-        const movesUrl = response.data.moves.slice(0, 4).map(move => move.move.name.replace("-", " "));
-        setMoves(movesUrl);
+        // Map each move URL to an Axios GET request to fetch detailed data for each move.
+        const moveDetailsPromises = response.data.moves.map(move => axios.get(move.move.url));
+        const movesDetailsResponses = await Promise.all(moveDetailsPromises); // Use Promise.all to wait for all Axios requests to complete
+
+        // Loop over each response to extract and structure the necessary move details
+        const movesDetails = movesDetailsResponses.map(response => ({
+          name: response.data.name.replace("-", " "), // Format move name from - to " "
+          type: response.data.type.name, // Type of move
+          power: response.data.power, // Power of move
+          accuracy: response.data.accuracy, // Accuracy of move
+          pp: response.data.pp, // Power points of move
+          description: response.data.effect_entries.find(entry => entry.language.name === "en")?.effect // Description of move
+        }));
+        setMoves(movesDetails.slice(0, 9)); // Display up to 9 moves for now
 
         // Fetch Pokémon description from species data
         const speciesDescription = await axios.get(speciesUrl);
@@ -115,14 +126,14 @@ function PokemonDetails() {
     <div>
       <Header />
       <div className="container mx-auto px-4 pt-20">
-        {/** Button used to return to previous pagination page**/}
+        {/* Button used to return to previous pagination page */}
         <Button startIcon={<ArrowBackIcon />} onClick={handleBack} sx={{ mb: 2 }}>
           Back
         </Button>
         <div className="flex justify-center">
           {/* Display Pokemon's Name and Picture */}
           <Card sx={{ width: 400, borderRadius: 4, boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)", position: "relative"}}>
-            {/** Favorite Heart Button **/}
+            {/* Favorite Heart Button */}
             <Button
               onClick={(e) => {
                 e.preventDefault();
@@ -213,19 +224,30 @@ function PokemonDetails() {
         </div>
         <div className="mt-8">
           {/* Display Pokemon's Moves */}
-          <Box sx={{ border: 1, borderColor: 'red', borderRadius: 4, padding: 2, marginTop: 4 }}>
-            <h2 className="text-2xl font-bold mb-4">Moves</h2>
-            <div className="grid grid-cols-2 gap-4 px-8 py-8">
+          <Box sx={{ m: 2 }}>
+            <Typography variant="h6" sx={{ mb: 2, fontSize: '1.75rem', fontWeight: 'bold' }}>Moves</Typography>
+            <Grid container spacing={2} sx={{ px : 2 , py: 2}}>
               {moves.map((move, index) => (
-                <Button 
-                  key={index} 
-                  variant="contained" 
-                  style={{ backgroundColor: '#C22E28', color: "white", borderRadius: "10px", fontWeight: "bold" }}
-                >
-                  {move}
-                </Button>
+                <Grid item xs={12} sm={6} md={4} key={index}>
+                  <Card sx={{ height: '100%' }}>
+                    <CardContent>
+                      {/* Move name displayed in uppercase */}
+                      <Typography variant="h6" component="div">{move.name.toUpperCase()}</Typography>
+                      {/* Display move type */}
+                      <Chip label={`Type: ${move.type}`} sx={{ mr: 1 }} />
+                        {/* Display move power, showing 'N/A' if power is null */}
+                      <Chip label={`Power: ${move.power || 'N/A'}`} />
+                      {/* Display move accuracy, showing 'N/A' if accuracy is null */}
+                      <Chip label={`Accuracy: ${move.accuracy || 'N/A'}`} />
+                      {/* Display move PP */}
+                      <Chip label={`PP: ${move.pp}`} />
+                      {/* Display a short description of the move's effects */}
+                      <Typography variant="body2">{move.description}</Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
               ))}
-            </div>
+            </Grid>
           </Box>
         </div>
       </div>
