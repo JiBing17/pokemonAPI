@@ -21,6 +21,7 @@ function PokemonDetails() {
   const [error, setError] = useState(null);
   const [evolutionChain, setEvolutionChain] = useState([]);
   const [moves, setMoves] = useState([]);
+  const [displayedMoves, setDisplayedMoves] = useState(9);
   const [about, setAbout] = useState(""); 
   const [favorites, setFavorites] = useState(JSON.parse(localStorage.getItem('favorites')) || {});
 
@@ -53,7 +54,7 @@ function PokemonDetails() {
           pp: response.data.pp, // Power points of move
           description: response.data.effect_entries.find(entry => entry.language.name === "en")?.effect // Description of move
         }));
-        setMoves(movesDetails.slice(0, 50)); // Display up to 9 moves for now
+        setMoves(movesDetails); // Display up to 9 moves for now
 
         // Fetch Pokémon description from species data
         const speciesDescription = await axios.get(speciesUrl);
@@ -105,6 +106,10 @@ function PokemonDetails() {
     console.log("f after : ", favorites)
     localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
   };
+    
+  const showMoreMoves = () => {
+    setDisplayedMoves(prev => prev + 9); // Increment the number of displayed moves by 9
+  };
 
   // Error rendering 
   if (loading) return <div>Loading...</div>;
@@ -145,6 +150,9 @@ function PokemonDetails() {
 
   // Helper function to truncate text to 100 words with an ellipsis
   const truncateDescription = (text) => {
+    if (!text) {
+      return "No Description Found..." // Default text if no description is found
+    }
     const words = text.split(' '); // Split text into an array of words
     if (words.length > 50) {
       return words.slice(0, 50).join(' ') + '...'; // Join the first 100 words with a space and add ellipsis
@@ -175,11 +183,11 @@ function PokemonDetails() {
             </Button>
             <CardContent>
               {/* Display Pokemon's Name */}
-              <Typography variant="h5" component="div" gutterBottom style={{textAlign: 'center'}}>
+              <Typography variant="h5" component="div" gutterBottom style={{ textAlign: 'center' }}>
                 {name.toUpperCase()}
               </Typography>
               {/* Display Pokemon's ID */}
-              <Typography variant="body2" color="text.secondary" sx={{ position: "absolute", top: 0, right: 0, marginTop: '10px', marginRight: '10px'}}>
+              <Typography variant="body2" color="text.secondary" sx={{ position: "absolute", top: 0, right: 0, marginTop: '10px', marginRight: '10px' }}>
                 #{id}
               </Typography>
               {/* Display Pokemon's Types */}
@@ -194,12 +202,12 @@ function PokemonDetails() {
               </div>
               {/* Display Pokemon's Image */}
               {sprites && (
-                <CardMedia 
-                  component="img" 
-                  height="300" 
-                  image={sprites.other['official-artwork'].front_default} 
-                  alt={`Image of ${name}`} 
-                  style={{ imageRendering: 'pixelated'}} 
+                <CardMedia
+                  component="img"
+                  height="300"
+                  image={sprites.other['official-artwork'].front_default}
+                  alt={`Image of ${name}`}
+                  style={{ imageRendering: 'pixelated' }}
                 />
               )}
               <div className="mt-6 text-center">
@@ -208,7 +216,7 @@ function PokemonDetails() {
                   {stats.map((stat, index) => (
                     <Grid item xs={6} key={index}>
                       <Typography variant="body2" color="text.secondary">{stat.stat.name}</Typography>
-                      <LinearProgress variant="determinate" value={(stat.base_stat / 255) * 100} sx={{ height: 10, borderRadius: 5, backgroundColor: '#ddd', '& .MuiLinearProgress-bar': { backgroundColor: typeColors[types[0].type.name] }}}/>
+                      <LinearProgress variant="determinate" value={(stat.base_stat / 255) * 100} sx={{ height: 10, borderRadius: 5, backgroundColor: '#ddd', '& .MuiLinearProgress-bar': { backgroundColor: typeColors[types[0].type.name] } }} />
                     </Grid>
                   ))}
                 </Grid>
@@ -219,70 +227,70 @@ function PokemonDetails() {
         {/* Display Pokemon's About Section */}
         {about && (
           <Box sx={{ border: 1, borderColor: 'red', borderRadius: 4, padding: 2, marginTop: 4 }}>
-            <h2 className="text-2xl font-bold mb-4">About</h2>
-            <div className="text-center">
-              <Typography variant="body1">{about}</Typography>
-            </div>
+            <Typography variant="h6" component="div" sx={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: 2 }}>About</Typography>
+            <Typography variant="body1">{truncateDescription(about)}</Typography>
           </Box>
         )}
-        <div className="mt-8">
           {/* Display Pokemon's Evolutions */}
-          <Box sx={{ border: 1, borderColor: 'red', borderRadius: 4, padding: 2, marginTop: 4 }}>
-            <Typography variant="h6" sx={{ mb: 2, fontSize: '1.75rem', fontWeight: 'bold' }}>
-              {name.toUpperCase()}'S Evolutions
-            </Typography>
-            <div className="flex justify-evenly">
-              {evolutionChain.map((stage, index) => (
-                <Card key={index} sx={{ width: 160, m: 1, boxShadow: "0px 2px 4px rgba(0,0,0,0.5)", borderRadius: 4}}>
-                  <Link to={`/pokemon/${stage.name}`} style={{ textDecoration: 'none' }}>
-                    <CardMedia
-                      component="img"
-                      image={stage.sprite}
-                      alt={`Sprite of ${stage.name}`}
-                      sx={{ height: 160, objectFit: 'contain', p: 1 }}
-                    />
-                    <CardContent sx={{ p: 1 }}>
-                      <Typography variant="body2" sx={{ textAlign: 'center' }}>
-                        {stage.name}
-                      </Typography>
-                    </CardContent>
-                  </Link>
-                </Card>
-              ))}
-            </div>
-          </Box>
+          <div className="mt-8">
+          <Typography variant="h6" sx={{ fontSize: '1.75rem', fontWeight: 'bold', marginBottom: 2 }}>Evolutions</Typography>
+          <div className="flex justify-evenly">
+            {evolutionChain.map((stage, index) => (
+              <Card key={index} sx={{ width: 160, m: 1, boxShadow: "0px 2px 4px rgba(0,0,0,0.5)", borderRadius: 4 }}>
+                <Link to={`/pokemon/${stage.name}`} style={{ textDecoration: 'none' }}>
+                  <CardMedia
+                    component="img"
+                    image={stage.sprite}
+                    alt={`Sprite of ${stage.name}`}
+                    sx={{ height: 160, objectFit: 'contain', p: 1 }}
+                  />
+                  <CardContent sx={{ p: 1 }}>
+                    <Typography variant="body2" sx={{ textAlign: 'center' }}>{stage.name}</Typography>
+                  </CardContent>
+                </Link>
+              </Card>
+            ))}
+          </div>
         </div>
         <div className="mt-8">
           {/* Display Pokemon's Moves */}
-          <Box sx={{ m: 2 }}>
-            <Typography variant="h6" sx={{ mb: 2, fontSize: '1.75rem', fontWeight: 'bold' }}>Moves</Typography>
-            <Grid container spacing={2} sx={{ px : 2 , py: 2}}>
-              {moves.map((move, index) => (
+          <Typography variant="h6" sx={{ fontSize: '1.75rem', fontWeight: 'bold', marginBottom: 2 }}>Moves</Typography>
+            <Grid container spacing={2} sx={{ px: 2, py: 2 }}>
+              {moves.slice(0, displayedMoves).map((move, index) => (
                 <Grid item xs={12} sm={6} md={4} key={index}>
                   <Card sx={{ height: '100%', boxShadow: "0px 2px 4px rgba(0,0,0,0.3)", borderRadius: 2 }}>
                     <CardContent>
                       {/* Move name displayed in uppercase */}
                       <Typography variant="h6" component="div">{move.name.toUpperCase()}</Typography>
                       {/* Display move type */}
-                      <Chip label={`Type: ${move.type}`} sx={{ mr: 5, color: "white" ,backgroundColor: typeColors[move.type]}} />
-                        {/* Display move power, showing 'N/A' if power is null */}
-                      <Chip label={`Power: ${move.power || 'N/A'}`} sx={{ mr : 1, color: "white", backgroundColor: getColorForValue(move.power)}}/>
+                      <Chip label={`Type: ${move.type}`} sx={{ backgroundColor: typeColors[move.type], color: "white", m: 0.5 }} />
+                      {/* Display move power, showing 'N/A' if power is null */}
+                      <Chip label={`Power: ${move.power || 'N/A'}`} sx={{ backgroundColor: getColorForValue(move.power), color: "white", m: 0.5 }}/>
                       {/* Display move accuracy, showing 'N/A' if accuracy is null */}
-                      <Chip label={`Accuracy: ${move.accuracy || 'N/A'}`} sx={{ mr : 1, color: "white", backgroundColor: getColorForValue(move.accuracy)}}/>
+                      <Chip label={`Accuracy: ${move.accuracy || 'N/A'}`} sx={{ backgroundColor: getColorForValue(move.accuracy), color: "white", m: 0.5 }} />
                       {/* Display move PP */}
-                      <Chip label={`PP: ${move.pp}`} sx={{ color: "white", backgroundColor: "#dddddd" }} />
+                      <Chip label={`PP: ${move.pp}`} sx={{ backgroundColor: "#dddddd", color: "white", m: 0.5 }} />
                       {/* Display a short description of the move's effects */}
                       <Typography variant="body2">{truncateDescription(move.description)}</Typography>
                     </CardContent>
                   </Card>
                 </Grid>
               ))}
-            </Grid>
-          </Box>
+            {/* Conditionally rendered button to show more moves*/}
+            {moves.length > displayedMoves && (
+              <Grid item xs={12} >
+                <Button onClick={showMoreMoves} sx={{ my: 2 }}>
+                  Show More
+                </Button>
+              </Grid>
+            )}
+          </Grid>
         </div>
       </div>
     </div>
   );
+  
+  
 }
 
 export default PokemonDetails;
