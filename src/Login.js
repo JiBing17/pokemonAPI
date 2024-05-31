@@ -46,7 +46,26 @@ function Login() {
                         autoFocus
                         value={username}
                         onChange={e => setUsername(e.target.value)}
-                        sx={{ mt: 2 }}
+                        sx={{
+                            mt: 2,
+                            '& .MuiOutlinedInput-root': {
+                              '& fieldset': {
+                                borderColor: '#C22E28',
+                              },
+                              '&:hover fieldset': {
+                                borderColor: '#C22E28',
+                              },
+                              '&.Mui-focused fieldset': {
+                                borderColor: '#C22E28',
+                              },
+                            },
+                            '& .MuiInputLabel-root': {
+                              color: 'black',
+                            },
+                            '& .MuiInputLabel-root.Mui-focused': {
+                              color: 'black',
+                            }
+                          }}
                     />
                     {/** Password Field **/}
                     <TextField
@@ -58,7 +77,26 @@ function Login() {
                         type="password"
                         value={password}
                         onChange={e => setPassword(e.target.value)}
-                        sx={{ mt: 2 }}
+                        sx={{
+                            mt: 2,
+                            '& .MuiOutlinedInput-root': {
+                              '& fieldset': {
+                                borderColor: '#C22E28',
+                              },
+                              '&:hover fieldset': {
+                                borderColor: '#C22E28',
+                              },
+                              '&.Mui-focused fieldset': {
+                                borderColor: '#C22E28',
+                              },
+                            },
+                            '& .MuiInputLabel-root': {
+                              color: 'black',
+                            },
+                            '& .MuiInputLabel-root.Mui-focused': {
+                              color: '#black',
+                            }
+                          }}
                     />
                     {/** Submit Login Button **/}
                     <Button
@@ -67,13 +105,13 @@ function Login() {
                         variant="contained"
                         color="primary"
                         onClick={handleLogin}
-                        sx={{ mt: 3, mb: 2 }}
+                        sx={{ mt: 3, mb: 2, backgroundColor: "#C22E28", '&:hover': { backgroundColor: '#B22222'}}}
                     >
                         Login
                     </Button>
                     {/** Switch to Create Account Form Link **/}
-                    <Link to="/register" style={{ textDecoration: 'none' }}>
-                        <Button variant="text">Don't have an account? Sign Up</Button>
+                    <Link to="/register" style={{ textDecoration: 'none'}}>
+                        <Button variant="text" sx={{color: "#C22E28"}}>Don't have an account? Sign Up</Button>
                     </Link>
                 </Paper>
             </Box>

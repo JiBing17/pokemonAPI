@@ -165,7 +165,7 @@ function PokemonDetails() {
       <Header />
       <div className="container mx-auto px-4 pt-20">
         {/* Button used to return to previous pagination page */}
-        <Button startIcon={<ArrowBackIcon />} onClick={handleBack} sx={{ mb: 2 }}>
+        <Button startIcon={<ArrowBackIcon />} onClick={handleBack} sx={{ mb: 2, color: "#C22E28"}}>
           Back
         </Button>
         <div className="flex justify-center">

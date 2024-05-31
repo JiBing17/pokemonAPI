@@ -51,7 +51,26 @@ function CreateAccount() {
                         autoFocus
                         value={username}
                         onChange={e => setUsername(e.target.value)}
-                        sx={{ mt: 2 }}
+                        sx={{
+                            mt: 2,
+                            '& .MuiOutlinedInput-root': {
+                              '& fieldset': {
+                                borderColor: '#C22E28',
+                              },
+                              '&:hover fieldset': {
+                                borderColor: '#C22E28',
+                              },
+                              '&.Mui-focused fieldset': {
+                                borderColor: '#C22E28',
+                              },
+                            },
+                            '& .MuiInputLabel-root': {
+                              color: 'black',
+                            },
+                            '& .MuiInputLabel-root.Mui-focused': {
+                              color: '#black',
+                            }
+                          }}
                     />
                     {/** Create Password Field **/}
                     <TextField
@@ -63,7 +82,26 @@ function CreateAccount() {
                         type="password"
                         value={password}
                         onChange={e => setPassword(e.target.value)}
-                        sx={{ mt: 2 }}
+                        sx={{
+                            mt: 2,
+                            '& .MuiOutlinedInput-root': {
+                              '& fieldset': {
+                                borderColor: '#C22E28',
+                              },
+                              '&:hover fieldset': {
+                                borderColor: '#C22E28',
+                              },
+                              '&.Mui-focused fieldset': {
+                                borderColor: '#C22E28',
+                              },
+                            },
+                            '& .MuiInputLabel-root': {
+                              color: 'black',
+                            },
+                            '& .MuiInputLabel-root.Mui-focused': {
+                              color: '#black',
+                            }
+                          }}
                     />
                     {/** Submit to Create New User Button **/}
                     <Button
@@ -72,14 +110,14 @@ function CreateAccount() {
                         variant="contained"
                         color="primary"
                         onClick={handleRegister}
-                        sx={{ mt: 3, mb: 2 }}
+                        sx={{ mt: 3, mb: 2, backgroundColor: "#C22E28", '&:hover': { backgroundColor: '#B22222'}}}
                     >
                         Sign Up
                     </Button>
                     {/** Switch to Create Account Form Link**/}
                     {error && <Typography color="error" textAlign="center">{error}</Typography>}
                     <Link to="/login" style={{ textDecoration: 'none' }}>
-                        <Button variant="text">Already have an account? Log In</Button>
+                        <Button variant="text" sx={{color: "#C22E28"}}>Already have an account? Log In</Button>
                     </Link>
                 </Paper>
             </Box>
