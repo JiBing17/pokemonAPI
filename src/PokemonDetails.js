@@ -226,17 +226,18 @@ function PokemonDetails() {
         </div>
         {/* Display Pokemon's About Section */}
         {about && (
-          <Box sx={{ border: 1, borderColor: 'red', borderRadius: 4, padding: 2, marginTop: 4 }}>
-            <Typography variant="h6" component="div" sx={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: 2 }}>About</Typography>
+          <Box sx={{ border: 1, borderColor: 'red', borderRadius: 4, padding: 2, marginTop: 4, alignContent: "center", display: "flex", flexDirection: "column", alignItems: "center"}}>
+            <Typography variant="h6" component="div" sx={{ fontSize: '1.75rem', fontWeight: 'bold', marginBottom: 2 }}>About</Typography>
             <Typography variant="body1">{truncateDescription(about)}</Typography>
           </Box>
         )}
-          {/* Display Pokemon's Evolutions */}
-          <div className="mt-8">
+        {/* Display Pokemon's Evolutions */}
+        <div className="mt-8">
+          <Box sx={{ border: 1, borderColor: 'red', borderRadius: 4, padding: 2, mt: 4 }}>
             <Typography variant="h6" sx={{ fontSize: '1.75rem', fontWeight: 'bold', marginBottom: 2, textAlign: 'center' }}>Evolutions</Typography>
             <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 2 }}>
               {evolutionChain.map((stage, index) => (
-                <Card key={index} sx={{ width: 160, boxShadow: "0px 4px 8px rgba(0,0,0,0.25)", borderRadius: 4, transition: "transform 0.3s ease-in-out", "&:hover": { transform: "scale(1.05)" }, mx:3 }}>
+                <Card key={index} sx={{ width: 160, boxShadow: "0px 4px 8px rgba(0,0,0,0.25)", borderRadius: 4, transition: "transform 0.3s ease-in-out", "&:hover": { transform: "scale(1.05)" }, mx: 3 }}>
                   <Link to={`/pokemon/${stage.name}`} style={{ textDecoration: 'none' }}>
                     <CardMedia
                       component="img"
@@ -253,10 +254,12 @@ function PokemonDetails() {
                 </Card>
               ))}
             </Box>
-          </div>
+          </Box>
+        </div>
         <div className="mt-8">
           {/* Display Pokemon's Moves */}
-          <Typography variant="h6" sx={{ fontSize: '1.75rem', fontWeight: 'bold', marginBottom: 2 }}>Moves</Typography>
+          <Box sx={{ border: 1, borderColor: 'red', borderRadius: 4, padding: 2, mt: 4 }}>
+            <Typography variant="h6" sx={{ fontSize: '1.75rem', fontWeight: 'bold', marginBottom: 2, textAlign: "center" }}>Moves</Typography>
             <Grid container spacing={2} sx={{ px: 2, py: 2 }}>
               {moves.slice(0, displayedMoves).map((move, index) => (
                 <Grid item xs={12} sm={6} md={4} key={index}>
@@ -267,26 +270,29 @@ function PokemonDetails() {
                       {/* Display move type */}
                       <Chip label={`Type: ${move.type}`} sx={{ backgroundColor: typeColors[move.type], color: "white", m: 0.5 }} />
                       {/* Display move power, showing 'N/A' if power is null */}
-                      <Chip label={`Power: ${move.power || 'N/A'}`} sx={{ backgroundColor: getColorForValue(move.power), color: "white", m: 0.5 }}/>
+                      <Chip label={`Power: ${move.power || 'N/A'}`} sx={{ backgroundColor: getColorForValue(move.power), color: "white", m: 0.5 }} />
                       {/* Display move accuracy, showing 'N/A' if accuracy is null */}
                       <Chip label={`Accuracy: ${move.accuracy || 'N/A'}`} sx={{ backgroundColor: getColorForValue(move.accuracy), color: "white", m: 0.5 }} />
                       {/* Display move PP */}
-                      <Chip label={`PP: ${move.pp}`} sx={{ backgroundColor: "#dddddd", color: "white", m: 0.5 }} />
+                      <Chip label={`PP: ${move.pp}`} sx={{ backgroundColor: "#C22E28", color: "white", m: 0.5 }} />
                       {/* Display a short description of the move's effects */}
                       <Typography variant="body2">{truncateDescription(move.description)}</Typography>
                     </CardContent>
                   </Card>
                 </Grid>
               ))}
-            {/* Conditionally rendered button to show more moves*/}
-            {moves.length > displayedMoves && (
-              <Grid item xs={12} >
-                <Button onClick={showMoreMoves} sx={{ my: 2 }}>
-                  Show More
-                </Button>
-              </Grid>
-            )}
-          </Grid>
+              {/* Conditionally rendered button to show more moves */}
+              {moves.length > displayedMoves && (
+                <Grid item xs={12}>
+                  <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
+                    <Button onClick={showMoreMoves} variant="contained" sx={{ backgroundColor: '#C22E28', color: 'white', '&:hover': { backgroundColor: '#B22222' }}}>
+                      Show More
+                    </Button>
+                  </Box>
+                </Grid>
+              )}
+            </Grid>
+          </Box>
         </div>
       </div>
     </div>
