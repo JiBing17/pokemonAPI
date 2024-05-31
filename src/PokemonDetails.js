@@ -233,25 +233,27 @@ function PokemonDetails() {
         )}
           {/* Display Pokemon's Evolutions */}
           <div className="mt-8">
-          <Typography variant="h6" sx={{ fontSize: '1.75rem', fontWeight: 'bold', marginBottom: 2 }}>Evolutions</Typography>
-          <div className="flex justify-evenly">
-            {evolutionChain.map((stage, index) => (
-              <Card key={index} sx={{ width: 160, m: 1, boxShadow: "0px 2px 4px rgba(0,0,0,0.5)", borderRadius: 4 }}>
-                <Link to={`/pokemon/${stage.name}`} style={{ textDecoration: 'none' }}>
-                  <CardMedia
-                    component="img"
-                    image={stage.sprite}
-                    alt={`Sprite of ${stage.name}`}
-                    sx={{ height: 160, objectFit: 'contain', p: 1 }}
-                  />
-                  <CardContent sx={{ p: 1 }}>
-                    <Typography variant="body2" sx={{ textAlign: 'center' }}>{stage.name}</Typography>
-                  </CardContent>
-                </Link>
-              </Card>
-            ))}
+            <Typography variant="h6" sx={{ fontSize: '1.75rem', fontWeight: 'bold', marginBottom: 2, textAlign: 'center' }}>Evolutions</Typography>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 2 }}>
+              {evolutionChain.map((stage, index) => (
+                <Card key={index} sx={{ width: 160, boxShadow: "0px 4px 8px rgba(0,0,0,0.25)", borderRadius: 4, transition: "transform 0.3s ease-in-out", "&:hover": { transform: "scale(1.05)" }, mx:3 }}>
+                  <Link to={`/pokemon/${stage.name}`} style={{ textDecoration: 'none' }}>
+                    <CardMedia
+                      component="img"
+                      image={stage.sprite}
+                      alt={`Sprite of ${stage.name}`}
+                      sx={{ height: 160, objectFit: 'contain', padding: 1 }}
+                    />
+                    <CardContent sx={{ padding: 1 }}>
+                      <Typography variant="body2" sx={{ textAlign: 'center', fontWeight: 'bold' }}>
+                        {stage.name.toUpperCase()}
+                      </Typography>
+                    </CardContent>
+                  </Link>
+                </Card>
+              ))}
+            </Box>
           </div>
-        </div>
         <div className="mt-8">
           {/* Display Pokemon's Moves */}
           <Typography variant="h6" sx={{ fontSize: '1.75rem', fontWeight: 'bold', marginBottom: 2 }}>Moves</Typography>

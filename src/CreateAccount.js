@@ -35,7 +35,7 @@ function CreateAccount() {
     // Create Account Form
     return (
         <Container maxWidth="sm">
-            <Box sx={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <Box sx={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center', boxShadow: "0px 2px 4px rgba(0,0,0,0.5)"}}>
                 <Paper sx={{ padding: 4, width: '100%', mt: 2 }}>
                     {/** Create Account Title **/}
                     <Typography component="h1" variant="h5" textAlign="center">
