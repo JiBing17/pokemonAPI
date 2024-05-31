@@ -228,7 +228,8 @@ function Home() {
                     backgroundColor: 'rgba(194, 46, 40, 0.5)'
                 },
                 minWidth: { xs: '30px', sm: '40px' }, 
-                padding: { xs: '6px 8px', sm: '8px 16px' }  
+                padding: { xs: '6px 8px', sm: '8px 16px' },
+                '&:hover': { backgroundColor: '#B22222' } 
             }}
             variant="contained"
             startIcon={<NavigateBefore />}
@@ -240,7 +241,8 @@ function Home() {
             transform: 'translateY(-50%)', 
             right: 0, 
             zIndex: 1000, 
-            mr: { xs: 1, sm: 2 }  
+            mr: { xs: 1, sm: 2 } 
+             
         }}>
           <Button
             onClick={handleNextPage} // Goes forward a pagination back
@@ -252,7 +254,8 @@ function Home() {
                     backgroundColor: 'rgba(194, 46, 40, 0.5)'
                 },
                 minWidth: { xs: '30px', sm: '40px' },  
-                padding: { xs: '6px 8px', sm: '8px 16px' } 
+                padding: { xs: '6px 8px', sm: '8px 16px' }, 
+                '&:hover': { backgroundColor: '#B22222' }
             }}
             variant="contained"
             endIcon={<NavigateNext />}
