@@ -163,8 +163,8 @@ function Home() {
             >
               {/* Pokemon Card */}
               <Card
-                className="bg-white shadow-md p-4 rounded-md mb-6 flex flex-col items-center w-72 md:w-96 mr-4 md:mb-4 relative"
-                style={{ borderWidth: '1px', borderStyle: 'solid', boxShadow: "0px 2px 4px rgba(0,0,0,0.5)" }}
+              className="bg-white shadow-md p-4 rounded-md mb-6 flex flex-col items-center w-72 md:w-96 mr-4 md:mb-4 relative hover:shadow-lg transition-shadow duration-300 ease-in-out transform hover:-translate-y-1 hover:border-2 hover:border-red-500"
+              style={{ borderWidth: '1px', borderStyle: 'solid', boxShadow: "0px 2px 4px rgba(0,0,0,0.5)" }}
               >
                 {/* Favorite Button */}
                 <Button
@@ -172,7 +172,7 @@ function Home() {
                     e.preventDefault();
                     toggleFavorite(pokemon.name); // Updates favorites state based on passed in key
                   }}
-                  sx={{ position: 'absolute', top: 8, left: 8 }}
+                  sx={{ position: 'absolute', top: 2, left: 2, color: "#C22E28"}}
                 >
                   {favorites[pokemon.name] ? <Favorite color="error" /> : <FavoriteBorder />} {/* Renders either filled or empty heart if key (name) in object */}
                 </Button>
