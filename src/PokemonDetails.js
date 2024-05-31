@@ -177,7 +177,7 @@ function PokemonDetails() {
                 e.preventDefault();
                 toggleFavorite(name);
               }}
-              sx={{ position: 'absolute', top: 8, left: 8 }}
+              sx={{ position: 'absolute', top: 8, left: 8, color: "#C22E28"}}
             >
               {favorites[pokemonName] ? <Favorite color="error" /> : <FavoriteBorder />}
             </Button>
@@ -226,14 +226,14 @@ function PokemonDetails() {
         </div>
         {/* Display Pokemon's About Section */}
         {about && (
-          <Box sx={{ border: 1, borderColor: 'red', borderRadius: 4, padding: 2, marginTop: 4, alignContent: "center", display: "flex", flexDirection: "column", alignItems: "center"}}>
+          <Box sx={{ border: 2, borderColor: '#C22E28', borderRadius: 4, padding: 2, marginTop: 4, alignContent: "center", display: "flex", flexDirection: "column", alignItems: "center"}}>
             <Typography variant="h6" component="div" sx={{ fontSize: '1.75rem', fontWeight: 'bold', marginBottom: 2 }}>About</Typography>
             <Typography variant="body1">{truncateDescription(about)}</Typography>
           </Box>
         )}
         {/* Display Pokemon's Evolutions */}
         <div className="mt-8">
-          <Box sx={{ border: 1, borderColor: 'red', borderRadius: 4, padding: 2, mt: 4 }}>
+          <Box sx={{ border: 2, borderColor: '#C22E28', borderRadius: 4, padding: 2, mt: 4 }}>
             <Typography variant="h6" sx={{ fontSize: '1.75rem', fontWeight: 'bold', marginBottom: 2, textAlign: 'center' }}>Evolutions</Typography>
             <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 2 }}>
               {evolutionChain.map((stage, index) => (
@@ -258,12 +258,21 @@ function PokemonDetails() {
         </div>
         <div className="mt-8">
           {/* Display Pokemon's Moves */}
-          <Box sx={{ border: 1, borderColor: 'red', borderRadius: 4, padding: 2, mt: 4 }}>
+          <Box sx={{ border: 2, borderColor: '#C22E28', borderRadius: 4, padding: 2, mt: 4 }}>
             <Typography variant="h6" sx={{ fontSize: '1.75rem', fontWeight: 'bold', marginBottom: 2, textAlign: "center" }}>Moves</Typography>
             <Grid container spacing={2} sx={{ px: 2, py: 2 }}>
               {moves.slice(0, displayedMoves).map((move, index) => (
                 <Grid item xs={12} sm={6} md={4} key={index}>
-                  <Card sx={{ height: '100%', boxShadow: "0px 2px 4px rgba(0,0,0,0.3)", borderRadius: 2 }}>
+                  <Card sx={{
+                    height: '100%',
+                    boxShadow: "0px 2px 4px rgba(0,0,0,0.3)",
+                    borderRadius: 2,
+                    transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
+                    '&:hover': {
+                      transform: 'translateY(-5px)',
+                      boxShadow: "0px 5px 15px rgba(0,0,0,0.5)"
+                    }
+                  }}>
                     <CardContent>
                       {/* Move name displayed in uppercase */}
                       <Typography variant="h6" component="div">{move.name.toUpperCase()}</Typography>
