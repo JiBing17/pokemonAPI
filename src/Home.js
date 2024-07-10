@@ -164,7 +164,7 @@ function Home() {
               {/* Pokemon Card */}
               <Card
               className="bg-white shadow-md p-4 rounded-md mb-6 flex flex-col items-center w-72 md:w-96 mr-4 md:mb-4 relative hover:shadow-lg transition-shadow duration-300 ease-in-out transform hover:-translate-y-1 hover:border-2 hover:border-red-500"
-              style={{ borderWidth: '1px', borderStyle: 'solid', boxShadow: "0px 2px 4px rgba(0,0,0,0.5)" }}
+              style={{ borderWidth: '3px', borderStyle: 'solid', boxShadow: "0px 2px 4px rgba(0,0,0,0.5)" }}
               >
                 {/* Favorite Button */}
                 <Button
