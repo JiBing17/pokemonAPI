@@ -142,6 +142,7 @@ function Home() {
               value={sortOrder}
               label="Sort By"
               onChange={(e) => setSortOrder(e.target.value)} // Sets sort order when changes are made to dropdown box
+              
             >
               {/* Sort Dropdown Options */}
               <MenuItem value="Index Order">Index Order</MenuItem>

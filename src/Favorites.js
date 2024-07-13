@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import { Card, CardMedia, CardContent, Typography, Button, Grid, FormControl, InputLabel, Select, MenuItem, Box } from '@mui/material';
+import { Card, CardMedia, CardContent, Typography, Button, Grid, FormControl, InputLabel, Select, MenuItem, Box , Paper} from '@mui/material';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Header from './Header';
@@ -58,7 +58,13 @@ function Favorites() {
     <div>
       {/* Header component for the page */}
       <Header />
-      <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', mt: 15, justifyContent: 'center', gap: 3, width: '90%', mx: 'auto' }}>
+      {/* Description Box */}
+      <Paper sx={{ p: 4, borderColor: 'error.main', borderWidth: 2, borderStyle: 'solid', borderRadius: 2, backgroundColor: 'white', mt: 10 }}>
+        <Typography variant="body1" class="text-center">
+          Here you can view all your favorite Pokémon. Click on a Pokémon to view its details or remove it from your favorites.
+        </Typography>
+      </Paper>
+      <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center',  justifyContent: 'center', gap: 3, width: '90%', mx: 'auto', mt: 5 }}>
         {/* Page title */}
         <Typography variant="h4" component="h1" sx={{ mb: 4, textAlign: 'center' }}>
           Favorites
