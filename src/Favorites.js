@@ -63,9 +63,9 @@ function Favorites() {
           Here you can view all your favorite Pokémon. Click on a Pokémon to view its details or remove it from your favorites.
         </Typography>
       </Paper>
-      <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center',  justifyContent: 'center', gap: 3, width: '90%', mx: 'auto', mt: 5 }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center',  justifyContent: 'center', mx: 'auto', mt: 5 }}>
         {/* Page title */}
-        <Typography variant="h4" component="h1" sx={{ mb: 4, textAlign: 'center' }}>
+        <Typography variant="h4" component="h1" sx={{ mb: 2, textAlign: 'center' }}>
           Favorites
         </Typography>
         {/* Dropdown to select the sort order */}
@@ -111,9 +111,6 @@ function Favorites() {
               >
                 <CloseIcon />
               </IconButton>
-              
-
-
               {/* Link to navigate to the PokemonDetails page */}
               <Link to={`/pokemon/${name}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                 <CardContent>
