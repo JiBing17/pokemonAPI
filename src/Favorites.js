@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import { Card, CardMedia, CardContent, Typography, Button, Grid, FormControl, InputLabel, Select, MenuItem, Box , Paper} from '@mui/material';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { Card, CardMedia, CardContent, Typography, Grid, FormControl, InputLabel, Select, MenuItem, Box , Paper, IconButton } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close'
 import Header from './Header';
 
 // Base URLs for API requests (backend)
@@ -95,6 +94,7 @@ function Favorites() {
             <Card sx={{
               boxShadow: 3,
               borderRadius: 2,
+              position: "relative",
               '&:hover': {
                 boxShadow: 6,
                 transform: 'scale(1.05)',
@@ -102,6 +102,18 @@ function Favorites() {
               },
               backgroundColor: 'background.paper'
             }}>
+              <IconButton
+                onClick={(e) => {
+                  e.stopPropagation();
+                  removeFavorite(name);
+                }}
+                sx={{ position: 'absolute', top: 8, left: 8, color: 'error.main', zIndex: 1 }}
+              >
+                <CloseIcon />
+              </IconButton>
+              
+
+
               {/* Link to navigate to the PokemonDetails page */}
               <Link to={`/pokemon/${name}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                 <CardContent>
@@ -120,18 +132,6 @@ function Favorites() {
                   )}
                 </CardContent>
               </Link>
-              {/* Button to remove Pokémon from favorites */}
-              <Button
-                fullWidth
-                onClick={(e) => {
-                  e.stopPropagation(); // Prevent link navigation when clicking the button
-                  removeFavorite(name);
-                }}
-                startIcon={<DeleteIcon sx={{ color: 'black' }} />}
-                sx={{ mt: 1, borderColor: 'primary.main', color: 'black' }} // Added color style here
-              >
-                Remove
-              </Button>
             </Card>
           </Grid>
         ))}
