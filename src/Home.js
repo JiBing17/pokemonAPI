@@ -124,14 +124,14 @@ function Home() {
       {/* Main container with padding and margin adjustments */}
       <div className="container mx-auto px-4 pt-20">
         {/* Search and Sort Controls */}
-        <div className="flex items-center justify-center w-full my-4">
+        <div className="flex items-center justify-center w-full my-4 gap-2">
           {/* Search Input */}
           <input
             type="text"
             placeholder="Search Pokémon..."
             value={searchQuery}
             onChange={handleSearchInputChange} // Sets search state when changes are made to search bar
-            className="px-4 py-2 border border-gray-300 rounded-md w-full md:w-64"
+            className="px-4 py-2 border border-gray-300 rounded-md w-full md:w-64 focus:outline-none focus:border-blue-500"
           />
           {/* Sort Dropdown */}
           <FormControl variant="outlined" sx={{ m: 1, minWidth: 120 }}>

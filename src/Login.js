@@ -32,7 +32,32 @@ function Login() {
     return (
         <div style={{ minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)' }}>
             {/* Background Gradient */}
-            <Container maxWidth="sm" sx={{ display: 'flex', flexDirection: 'column' }}>
+            <Container maxWidth="sm" sx={{ display: 'flex', flexDirection: 'column' , alignItems: 'center'}}>
+
+                {/* Title */}
+                <Typography variant="h3" component="h1" 
+                    sx={{
+                        display: "inline-block",
+                        color: '#FFCC00',                 // Yellow color
+                        fontWeight: 'bold', 
+                        WebkitTextStroke: '1px #0075BE',  // Blue border outline
+                        WebkitTextFillColor: '#FFCC00',   // Ensures the text fill remains yellow
+                    }}>
+                    <Box
+                        sx={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            background: "white",
+                            borderRadius: "50px",
+                            paddingX: '24px',           // Horizontal padding for oval shape
+                            paddingY: '8px',            // Vertical padding for oval shape
+                            boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.2)'
+                        }}
+                    >
+                        PokéWeb
+                    </Box>
+                </Typography>
                 <Box sx={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center', boxShadow: "0px 2px 4px rgba(0,0,0,0.5)" }}>
                     <Paper sx={{ padding: 4, width: '100%' }}>
                         {/** Login Title **/}
