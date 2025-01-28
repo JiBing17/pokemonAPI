@@ -54,7 +54,7 @@ function Home() {
   const getPokemonImage = async (url) => {
     try {
       const response = await axios.get(url); // Axios call to fetched data on passed in pokemon URL
-      return response.data.sprites.front_default; // Returns image URL of the fetched data
+      return response.data.sprites.other["official-artwork"].front_default;
     } catch (error) {
       console.error("Error fetching Pokemon image:", error); // Error handeling if Axios failed
       return null;

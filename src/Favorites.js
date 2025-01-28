@@ -122,7 +122,7 @@ function Favorites() {
                   {pokemonDetails[name] && (
                     <CardMedia
                       component="img"
-                      image={pokemonDetails[name].sprites.front_default}
+                      image={pokemonDetails[name].sprites.other["official-artwork"].front_default}
                       alt={`Image of ${name}`}
                       sx={{ height: 150, objectFit: 'contain' }}
                     />

@@ -81,7 +81,7 @@ function PokemonDetails() {
     while (currentStage) {
       stages.push({
         name: currentStage.species.name,
-        sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${currentStage.species.url.split("/")[6]}.png`,
+        sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${currentStage.species.url.split("/")[6]}.png`,
       });
       currentStage = currentStage.evolves_to[0];
     }
@@ -120,7 +120,7 @@ function PokemonDetails() {
 
   // Static types for their corresponding colors
   const typeColors = {
-    normal: '#A8A77A',
+    normal: '#c0c0c0',
     fire: '#EE8130',
     water: '#6390F0',
     electric: '#F7D02C',
@@ -163,119 +163,132 @@ function PokemonDetails() {
   return (
     <div>
       <Header />
+
+      
       <div className="container mx-auto px-4 pt-20">
         {/* Button used to return to previous pagination page */}
         <Button startIcon={<ArrowBackIcon />} onClick={handleBack} sx={{ mb: 2, color: "#C22E28"}}>
           Back
         </Button>
-        <div className="flex justify-center">
-          {/* Display Pokemon's Name and Picture */}
-          <Card sx={{ width: 400, borderRadius: 4, boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)", position: "relative"}}>
-            {/* Favorite Heart Button */}
-            <Button
-              onClick={(e) => {
-                e.preventDefault();
-                toggleFavorite(name);
-              }}
-              sx={{ position: 'absolute', top: 8, left: 8, color: "#C22E28"}}
-            >
-              {favorites[pokemonName] ? <Favorite color="error" /> : <FavoriteBorder />}
-            </Button>
-            <CardContent>
-              {/* Display Pokemon's Name */}
-              <Typography variant="h5" component="div" gutterBottom style={{ textAlign: 'center' }}>
-                {name.toUpperCase()}
-              </Typography>
-              {/* Display Pokemon's ID */}
-              <Typography variant="body2" color="text.secondary" sx={{ position: "absolute", top: 0, right: 0, marginTop: '10px', marginRight: '10px' }}>
-                #{id}
-              </Typography>
-              {/* Display Pokemon's Types */}
-              <div style={{ display: "flex", justifyContent: "center", marginBottom: "10px" }}>
-                {types.map((type, index) => (
-                  <Chip
-                    key={index}
-                    label={type.type.name}
-                    sx={{ backgroundColor: typeColors[type.type.name], color: "white", marginRight: "5px", marginLeft: "5px", paddingRight: "10px", paddingLeft: "10px" }}
-                  />
-                ))}
-              </div>
-              {/* Display Pokemon's Image */}
-              {sprites && (
-                <CardMedia
-                  component="img"
-                  height="300"
-                  image={sprites.other['official-artwork'].front_default}
-                  alt={`Image of ${name}`}
-                  style={{ imageRendering: 'pixelated' }}
-                />
-              )}
-              <div className="mt-6 text-center">
-                {/* Display Pokemon stats with visual bars */}
-                <Grid container spacing={2}>
-                  {stats.map((stat, index) => (
-                    <Grid item xs={6} key={index}>
-                      <Typography variant="body2" color="text.secondary">{stat.stat.name}</Typography>
-                      <LinearProgress variant="determinate" value={(stat.base_stat / 255) * 100} sx={{ height: 10, borderRadius: 5, backgroundColor: '#ddd', '& .MuiLinearProgress-bar': { backgroundColor: typeColors[types[0].type.name] } }} />
-                    </Grid>
-                  ))}
-                </Grid>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-        {/* Display Pokemon's About Section */}
-        {about && (
-          <Box sx={{ border: 2, borderColor: '#C22E28', borderRadius: 4, padding: 2, marginTop: 4, alignContent: "center", display: "flex", flexDirection: "column", alignItems: "center"}}>
-            <Typography variant="h6" component="div" sx={{ fontSize: '1.75rem', fontWeight: 'bold', marginBottom: 2 }}>About</Typography>
-            <Typography variant="body1">{truncateDescription(about)}</Typography>
-          </Box>
-        )}
-        {/* Display Pokemon's Evolutions */}
-        <div className="mt-8">
-          <Box sx={{ border: 2, borderColor: '#C22E28', borderRadius: 4, padding: 2, mt: 4 }}>
-            <Typography variant="h6" sx={{ fontSize: '1.75rem', fontWeight: 'bold', marginBottom: 2, textAlign: 'center' }}>Evolutions</Typography>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 2 }}>
-              {evolutionChain.map((stage, index) => (
-                <Card key={index} sx={{ width: 160, boxShadow: "0px 4px 8px rgba(0,0,0,0.25)", borderRadius: 4, transition: "transform 0.3s ease-in-out", "&:hover": { transform: "scale(1.05)" }, mx: 3 }}>
-                  <Link to={`/pokemon/${stage.name}`} style={{ textDecoration: 'none' }}>
-                    <CardMedia
-                      component="img"
-                      image={stage.sprite}
-                      alt={`Sprite of ${stage.name}`}
-                      sx={{ height: 160, objectFit: 'contain', padding: 1 }}
+        
+        <Box sx={{display: "flex", justifyContent: "center", alignItems: "center"}}>
+          <div className="flex justify-center">
+            {/* Display Pokemon's Name and Picture */}
+            <Card sx={{ width: 400, borderRadius: 4, boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)", position: "relative"}}>
+              {/* Favorite Heart Button */}
+              <Button
+                onClick={(e) => {
+                  e.preventDefault();
+                  toggleFavorite(name);
+                }}
+                sx={{ position: 'absolute', top: 8, left: 8, color: "#C22E28"}}
+              >
+                {favorites[pokemonName] ? <Favorite color="error" /> : <FavoriteBorder />}
+              </Button>
+              <CardContent>
+                {/* Display Pokemon's Name */}
+                <Typography variant="h5" component="div" gutterBottom style={{ textAlign: 'center' }}>
+                  {name.toUpperCase()}
+                </Typography>
+                {/* Display Pokemon's ID */}
+                <Typography variant="body2" color="text.secondary" sx={{ position: "absolute", top: 0, right: 0, marginTop: '10px', marginRight: '10px' }}>
+                  #{id}
+                </Typography>
+                {/* Display Pokemon's Types */}
+                <div style={{ display: "flex", justifyContent: "center", marginBottom: "10px" }}>
+                  {types.map((type, index) => (
+                    <Chip
+                      key={index}
+                      label={type.type.name}
+                      sx={{ backgroundColor: typeColors[type.type.name], color: "white", marginRight: "5px", marginLeft: "5px", paddingRight: "10px", paddingLeft: "10px" }}
                     />
-                    <CardContent sx={{ padding: 1 }}>
-                      <Typography variant="body2" sx={{ textAlign: 'center', fontWeight: 'bold' }}>
-                        {stage.name.toUpperCase()}
-                      </Typography>
-                    </CardContent>
-                  </Link>
-                </Card>
-              ))}
-            </Box>
+                  ))}
+                </div>
+                {/* Display Pokemon's Image */}
+                {sprites && (
+                  <CardMedia
+                    component="img"
+                    height="300"
+                    image={sprites.other['official-artwork'].front_default}
+                    alt={`Image of ${name}`}
+                    style={{ imageRendering: 'pixelated' }}
+                  />
+                )}
+                <div className="mt-6 text-center">
+                  {/* Display Pokemon stats with visual bars */}
+                  <Grid container spacing={2}>
+                    {stats.map((stat, index) => (
+                      <Grid item xs={6} key={index}>
+                        <Typography variant="body2" color="text.secondary">{stat.stat.name}</Typography>
+                        <LinearProgress variant="determinate" value={(stat.base_stat / 255) * 100} sx={{ height: 10, borderRadius: 5, backgroundColor: '#ddd', '& .MuiLinearProgress-bar': { backgroundColor: typeColors[types[0].type.name] } }} />
+                      </Grid>
+                    ))}
+                  </Grid>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", border: 4, borderColor: typeColors[types[0].type.name], borderRadius: 4, marginLeft: "2rem", padding: "2rem" }}>
+            {/* Display Pokemon's About Section */}
+            {about && (
+              <Box sx={{ padding: 2, marginTop: 2, alignContent: "center", display: "flex", flexDirection: "column", alignItems: "center"}}>
+                <Typography variant="h6" component="div" sx={{ fontSize: '1.75rem', fontWeight: 'bold', marginBottom: 2 }}>About</Typography>
+                <Typography variant="body1">{truncateDescription(about)}</Typography>
+              </Box>
+            )}
+
+            {/* Display Pokemon's Evolutions */}
+            <div className="mt-2">
+              <Box sx={{ padding: 2 }}>
+                <Typography variant="h6" sx={{ fontSize: '1.75rem', fontWeight: 'bold', marginBottom: 2, textAlign: 'center' }}>Evolutions</Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 2 }}>
+                  {evolutionChain.map((stage, index) => (
+                    <Card key={index} sx={{ width: 160, boxShadow: "0px 4px 8px rgba(0,0,0,0.25)", borderRadius: 4, transition: "transform 0.3s ease-in-out", "&:hover": { transform: "scale(1.05)" }, mx: 3 }}>
+                      <Link to={`/pokemon/${stage.name}`} style={{ textDecoration: 'none' }}>
+                        <CardMedia
+                          component="img"
+                          image={stage.sprite}
+                          alt={`Sprite of ${stage.name}`}
+                          sx={{ height: 160, objectFit: 'contain', padding: 1 }}
+                        />
+                        <CardContent sx={{ padding: 1 }}>
+                          <Typography variant="body2" sx={{ textAlign: 'center', fontWeight: 'bold' }}>
+                            {stage.name.toUpperCase()}
+                          </Typography>
+                        </CardContent>
+                      </Link>
+                    </Card>
+                  ))}
+                </Box>
+              </Box>
+            </div>
           </Box>
-        </div>
+        </Box>
+
+        
+      
         <div className="mt-8">
           {/* Display Pokemon's Moves */}
-          <Box sx={{ border: 2, borderColor: '#C22E28', borderRadius: 4, padding: 2, mt: 4 }}>
+          <Box sx={{ border: 4, borderColor: typeColors[types[0].type.name] , borderRadius: 4, padding: 2, mt: 4 }}>
             <Typography variant="h6" sx={{ fontSize: '1.75rem', fontWeight: 'bold', marginBottom: 2, textAlign: "center" }}>Moves</Typography>
             <Grid container spacing={2} sx={{ px: 2, py: 2 }}>
               {moves.slice(0, displayedMoves).map((move, index) => (
                 <Grid item xs={12} sm={6} md={4} key={index}>
                   <Card sx={{
                     height: '100%',
-                    boxShadow: "0px 2px 4px rgba(0,0,0,0.3)",
-                    borderRadius: 2,
+                    boxShadow: "0px 3px 3px rgba(0,0,0,0.6)",
+                    border: 5,
+                    borderColor: typeColors[move.type], 
+                    borderRadius: "1rem",
                     transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
                     '&:hover': {
                       transform: 'translateY(-5px)',
-                      boxShadow: "0px 5px 15px rgba(0,0,0,0.5)"
+                      boxShadow: "0px 5px 15px rgba(0,0,0,.9)"
                     }
                   }}>
                     <CardContent>
                       {/* Move name displayed in uppercase */}
-                      <Typography variant="h6" component="div">{move.name.toUpperCase()}</Typography>
+                      <Typography  variant="h6" component="div">{move.name.toUpperCase()}</Typography>
                       {/* Display move type */}
                       <Chip label={`Type: ${move.type}`} sx={{ backgroundColor: typeColors[move.type], color: "white", m: 0.5 }} />
                       {/* Display move power, showing 'N/A' if power is null */}
@@ -285,7 +298,7 @@ function PokemonDetails() {
                       {/* Display move PP */}
                       <Chip label={`PP: ${move.pp}`} sx={{ backgroundColor: "#C22E28", color: "white", m: 0.5 }} />
                       {/* Display a short description of the move's effects */}
-                      <Typography variant="body2">{truncateDescription(move.description)}</Typography>
+                      <Typography  variant="body2">{truncateDescription(move.description)}</Typography>
                     </CardContent>
                   </Card>
                 </Grid>
