@@ -36,8 +36,7 @@ const Contact = () => {
       <Box
         sx={{
           margin: "0 auto 0 auto",
-          minHeight: "100vh", // Ensures the background gradient covers the entire viewport
-          paddingTop: "8rem",
+          marginTop: "8rem",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
