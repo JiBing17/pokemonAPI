@@ -4,6 +4,8 @@ import { AppBar, Toolbar, Typography, Button, Box, IconButton } from '@mui/mater
 import { useAuth } from './AuthContext';
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+
 
 function Header() {
     // Get the setIsAuthenticated function from the authentication context
@@ -29,9 +31,14 @@ function Header() {
                         style={{ height: '40px'}}
                     />
                 </Box>
+
                 {/** Favorite Cards Link **/}
                 <IconButton component={Link} to="/pokemon/favorites" color="inherit" sx={{ mr: 2 }}>
                     <FavoriteIcon />
+                </IconButton>
+                {/** Contact Link **/}
+                <IconButton component={Link} to="/contact" color="inherit" sx={{ mr: 2 }}>
+                    < HelpOutlineIcon />
                 </IconButton>
                 {/** Logout Link **/}
                 <IconButton color="inherit" onClick={handleLogout}>
