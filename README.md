@@ -1,5 +1,7 @@
 ## Overview
-This project allows Pokémon fans to explore detailed information about over 1,000 Pokémon species. Utilizing PokeAPI, this project demonstrates advanced data handling and UI design, making it a modern pokédex
+This was a final project for a 8 week React course, organized by IEEE in collaboration with the College of Engineering. I wasn't able to complete this project at the time but decided to start over a year later to not only complete the project, but to go beyond and keep integrating it over time.
+
+This project allows Pokémon fans to explore detailed information about over 1,000 Pokémon species. Utilizing PokeAPI, this project demonstrates advanced data handling and UI design, making it a modern pokédex.
 
 ## Features
 1. **User Authentication:**
