@@ -6,6 +6,7 @@ import Login from './Login';
 import CreateAccount from './CreateAccount';
 import { AuthProvider, useAuth } from './AuthContext';
 import Favorites from './Favorites';
+import VideoGames from './VideoGames';
 import Contact
 
 from './Contact';
@@ -30,6 +31,7 @@ function App() {
                     <Route path="/pokemon/:pokemonName" element={<PrivateRoute><PokemonDetails /></PrivateRoute>} />
                     <Route path="/pokemon/favorites" element={<PrivateRoute><Favorites /></PrivateRoute>} />
                     <Route path="/contact" element={<PrivateRoute><Contact /></PrivateRoute>} />
+                    <Route path="/videogames" element={<PrivateRoute><VideoGames /></PrivateRoute>} />
 
                 </Routes>
             </Router>

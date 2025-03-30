@@ -32,6 +32,10 @@ function Header() {
                     />
                 </Box>
 
+                {/** Game Link **/}
+                <IconButton component={Link} to="/videogames" color="inherit" sx={{ mr: 2 }}>
+                    <FavoriteIcon />
+                </IconButton>
                 {/** Favorite Cards Link **/}
                 <IconButton component={Link} to="/pokemon/favorites" color="inherit" sx={{ mr: 2 }}>
                     <FavoriteIcon />
