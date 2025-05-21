@@ -5,7 +5,7 @@ import { useAuth } from './AuthContext';
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-
+import MovieIcon from '@mui/icons-material/Movie';
 
 function Header() {
     // Get the setIsAuthenticated function from the authentication context
@@ -33,8 +33,8 @@ function Header() {
                 </Box>
 
                 {/** Game Link **/}
-                <IconButton component={Link} to="/videogames" color="inherit" sx={{ mr: 2 }}>
-                    <FavoriteIcon />
+                <IconButton component={Link} to="/movies" color="inherit" sx={{ mr: 2 }}>
+                    <MovieIcon/>
                 </IconButton>
                 {/** Favorite Cards Link **/}
                 <IconButton component={Link} to="/pokemon/favorites" color="inherit" sx={{ mr: 2 }}>

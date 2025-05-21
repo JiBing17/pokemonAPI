@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link, useLocation } from 'react-router-dom';
-import { Card, CardContent, Typography, Button, Box } from '@mui/material';
+import { Card, CardContent, Typography, Button, Box,  Autocomplete, TextField } from '@mui/material';
 import { NavigateBefore, NavigateNext , Favorite, FavoriteBorder} from '@mui/icons-material';
 import Header from './Header';
 import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
@@ -9,6 +9,16 @@ import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 // API URL for the backend
 const BASE_URL = "http://localhost:5000/api";
 const POKEMON_URL = BASE_URL + "/pokemon";
+const PLACEHOLDER = "https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif";
+
+// Get the numeric ID out of a PokéAPI URL
+const getIdFromUrl = url =>
+  url.split("/").filter(Boolean).pop();
+
+// Build the official-artwork sprite URL on GitHub
+const getSpriteUrl = url =>
+  `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${getIdFromUrl(url)}.png`;
+
 
 function Home() {
   // States need to store relevant data
@@ -22,6 +32,21 @@ function Home() {
   const [filteredPokemonData, setFilteredPokemonData] = useState([]);
   const [favorites, setFavorites] = useState(JSON.parse(localStorage.getItem('favorites')) || {}); 
   const [sortOrder, setSortOrder] = useState('Index Order'); 
+  const [allPokemon, setAllPokemon] = useState([]);
+
+
+  // On-mount, grab all names (PokéAPI max ~1118)
+  useEffect(() => {
+    const fetchAll = async () => {
+      try {
+        const res = await axios.get(`${POKEMON_URL}?limit=2000`);
+        setAllPokemon(res.data.results);
+      } catch (err) {
+        console.error("Error fetching full Pokémon list:", err);
+      }
+    };
+    fetchAll();
+  }, []);
 
   // Fetch Pokemon data from the backend each time curent page state changes
   useEffect(() => {
@@ -64,10 +89,11 @@ function Home() {
   // Filter out pokemon data based on search, index sort, name ascending sort, and name descending sort
   useEffect(() => {
 
-    // Filtered by search first
-    let filtered = pokemonData.filter(pokemon =>
-      pokemon.name.toLowerCase().startsWith(searchQuery.toLowerCase())
+    const source = searchQuery ? allPokemon : pokemonData;
+    let filtered = source.filter(p =>
+      p.name.toLowerCase().startsWith(searchQuery.toLowerCase())
     );
+
     // Sort by name if that option is chosen
     if (sortOrder === 'Name Ascending') {
       filtered = filtered.sort((a, b) => a.name.localeCompare(b.name));
@@ -126,12 +152,15 @@ function Home() {
         {/* Search and Sort Controls */}
         <div className="flex items-center justify-center w-full my-4 gap-2">
           {/* Search Input */}
-          <input
-            type="text"
-            placeholder="Search Pokémon..."
-            value={searchQuery}
-            onChange={handleSearchInputChange} // Sets search state when changes are made to search bar
-            className="px-4 py-2 border border-gray-300 rounded-md w-full md:w-64 focus:outline-none focus:border-blue-500"
+          <Autocomplete
+            freeSolo
+            options={allPokemon.map(p => p.name)}
+            inputValue={searchQuery}
+            onInputChange={(e, value) => setSearchQuery(value)}
+            sx={{ width: 300, mr: 2 }}
+            renderInput={(params) => (
+              <TextField {...params} label="Search Pokémon" variant="outlined" />
+            )}
           />
           {/* Sort Dropdown */}
           <FormControl variant="outlined" sx={{ m: 1, minWidth: 120 }}>
@@ -189,13 +218,25 @@ function Home() {
                     {pokemon.name}
                   </Typography>
                   {/* Pokemon Image */}
-                  {pokemonImages[pokemon.name] && (
+                  <div
+                    className="mt-2 w-32 h-32 bg-center bg-no-repeat bg-contain relative"
+                    style={{ backgroundImage: `url(${PLACEHOLDER})` }}
+                  >
                     <img
-                      src={pokemonImages[pokemon.name]}
+                      src={getSpriteUrl(pokemon.url)}
                       alt={`Image of ${pokemon.name}`}
-                      className="mt-2 w-32 h-32 object-contain"
+                      loading="lazy"
+                      onLoad={e => {
+                        // once the real sprite has loaded, wipe out the spinner background
+                        e.currentTarget.parentNode.style.backgroundImage = "none";
+                      }}
+                      onError={e => {
+                        // if the sprite 404s, fall back to spinner
+                        e.currentTarget.src = PLACEHOLDER;
+                      }}
+                      className="absolute top-0 left-0 w-full h-full object-contain"
                     />
-                  )}
+                  </div>
                   {/* Pokemon Index */}
                   <Typography
                     variant="body2"
@@ -210,58 +251,69 @@ function Home() {
             </Link>
           ))}
         </div>
-        {/* Pagination Controls */}
-        <Box sx={{ // Displayed on far left middle
-            position: 'fixed', 
-            top: '50%', 
-            transform: 'translateY(-50%)', 
-            left: 0, 
-            zIndex: 1000, 
-            ml: { xs: 1, sm: 2 }  
-        }}>
-          <Button
-            onClick={handlePrevPage} // Goes back a pagination back
-            disabled={currentPage === 1} // Disabled when on first page
-            sx={{
-                backgroundColor: '#C22E28',
-                color: 'white',
-                '&:disabled': {
-                    backgroundColor: 'rgba(194, 46, 40, 0.5)'
-                },
-                minWidth: { xs: '30px', sm: '40px' }, 
-                padding: { xs: '6px 8px', sm: '8px 16px' },
-                '&:hover': { backgroundColor: '#B22222' } 
-            }}
-            variant="contained"
-            startIcon={<NavigateBefore />}
-          />
-        </Box>
-        <Box sx={{  // Displayed on far right middle
-            position: 'fixed', 
-            top: '50%', 
-            transform: 'translateY(-50%)', 
-            right: 0, 
-            zIndex: 1000, 
-            mr: { xs: 1, sm: 2 } 
-             
-        }}>
-          <Button
-            onClick={handleNextPage} // Goes forward a pagination back
-            disabled={currentPage === totalPages} // Disabled when on last page
-            sx={{
-                backgroundColor: '#C22E28',
-                color: 'white',
-                '&:disabled': {
-                    backgroundColor: 'rgba(194, 46, 40, 0.5)'
-                },
-                minWidth: { xs: '30px', sm: '40px' },  
-                padding: { xs: '6px 8px', sm: '8px 16px' }, 
-                '&:hover': { backgroundColor: '#B22222' }
-            }}
-            variant="contained"
-            endIcon={<NavigateNext />}
-          />
-        </Box>
+
+        {!searchQuery && (
+          <>
+            {/* Pagination Controls */}
+            <Box sx={{ // Displayed on far left middle
+              position: 'fixed', 
+              top: '50%', 
+              transform: 'translateY(-50%)', 
+              left: 0, 
+              zIndex: 1000, 
+              ml: { xs: 1, sm: 2 }  
+            }}>
+            <Button
+              onClick={handlePrevPage} // Goes back a pagination back
+              disabled={currentPage === 1} // Disabled when on first page
+              sx={{
+                  backgroundColor: '#C22E28',
+                  color: 'white',
+                  '&:disabled': {
+                      backgroundColor: 'rgba(194, 46, 40, 0.5)'
+                  },
+                  minWidth: { xs: '30px', sm: '40px' }, 
+                  padding: { xs: '6px 8px', sm: '8px 16px' },
+                  '&:hover': { backgroundColor: '#B22222' } 
+              }}
+              variant="contained"
+              startIcon={<NavigateBefore />}
+            />
+          </Box>
+        </>
+        )}
+        {!searchQuery && (
+          <>
+            <Box sx={{  // Displayed on far right middle
+              position: 'fixed', 
+              top: '50%', 
+              transform: 'translateY(-50%)', 
+              right: 0, 
+              zIndex: 1000, 
+              mr: { xs: 1, sm: 2 } 
+              
+            }}>
+            <Button
+              onClick={handleNextPage} // Goes forward a pagination back
+              disabled={currentPage === totalPages} // Disabled when on last page
+              sx={{
+                  backgroundColor: '#C22E28',
+                  color: 'white',
+                  '&:disabled': {
+                      backgroundColor: 'rgba(194, 46, 40, 0.5)'
+                  },
+                  minWidth: { xs: '30px', sm: '40px' },  
+                  padding: { xs: '6px 8px', sm: '8px 16px' }, 
+                  '&:hover': { backgroundColor: '#B22222' }
+              }}
+              variant="contained"
+              endIcon={<NavigateNext />}
+            />
+          </Box>
+        </>
+        )}
+
+        
       </div>
     </div>
   );

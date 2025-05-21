@@ -7,9 +7,8 @@ import CreateAccount from './CreateAccount';
 import { AuthProvider, useAuth } from './AuthContext';
 import Favorites from './Favorites';
 import VideoGames from './VideoGames';
-import Contact
-
-from './Contact';
+import Contact from './Contact';
+import Movies from './Movies';
 // ensures that only authenticated users can access the route
 function PrivateRoute({ children }) {
     const { isAuthenticated } = useAuth();
@@ -32,6 +31,7 @@ function App() {
                     <Route path="/pokemon/favorites" element={<PrivateRoute><Favorites /></PrivateRoute>} />
                     <Route path="/contact" element={<PrivateRoute><Contact /></PrivateRoute>} />
                     <Route path="/videogames" element={<PrivateRoute><VideoGames /></PrivateRoute>} />
+                    <Route path="/movies" element={<Movies />} />
 
                 </Routes>
             </Router>
