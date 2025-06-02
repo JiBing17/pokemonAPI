@@ -7,6 +7,8 @@ import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import MovieIcon from '@mui/icons-material/Movie';
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
+import { Collections, CreditCard } from '@mui/icons-material';
+
 function Header() {
     // Get the setIsAuthenticated function from the authentication context
     const { setIsAuthenticated } = useAuth();
@@ -33,7 +35,7 @@ function Header() {
                 </Box>
                 {/** Games Link **/}
                 <IconButton component={Link} to="/games" color="inherit" sx={{ mr: 2 }}>
-                    <SportsEsportsIcon />
+                    <Collections/>
                 </IconButton>
                 <IconButton component={Link} to="/items" color="inherit" sx={{ mr: 2 }}>
                     <SportsEsportsIcon />
