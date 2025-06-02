@@ -35,6 +35,9 @@ function Header() {
                 <IconButton component={Link} to="/games" color="inherit" sx={{ mr: 2 }}>
                     <SportsEsportsIcon />
                 </IconButton>
+                <IconButton component={Link} to="/items" color="inherit" sx={{ mr: 2 }}>
+                    <SportsEsportsIcon />
+                </IconButton>
                 {/** Movies Link **/}
                 <IconButton component={Link} to="/movies" color="inherit" sx={{ mr: 2 }}>
                     <MovieIcon/>

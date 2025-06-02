@@ -10,8 +10,8 @@ import VideoGames from './VideoGames';
 import Contact from './Contact';
 import Movies from './Movies';
 import Games from './Games';
-import MovieDetail from './MovieDetail';
-
+import MovieDetail from './MovieDetail.js';
+import Items from './Items.js';
 // ensures that only authenticated users can access the route
 function PrivateRoute({ children }) {
     const { isAuthenticated } = useAuth();
@@ -37,6 +37,7 @@ function App() {
                     <Route path="/movies" element={<Movies />} />
                     <Route path="/games" element={<Games />} />
                     <Route path="/movie/:id" element={<MovieDetail />} />
+                    <Route path="/items" element={<Items />} />
 
 
                 </Routes>

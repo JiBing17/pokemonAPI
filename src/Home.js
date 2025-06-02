@@ -1,321 +1,449 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
-import { Link, useLocation } from 'react-router-dom';
-import { Card, CardContent, Typography, Button, Box,  Autocomplete, TextField } from '@mui/material';
-import { NavigateBefore, NavigateNext , Favorite, FavoriteBorder} from '@mui/icons-material';
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  TextField,
+  InputAdornment,
+  Grid,
+  Card,
+  CardMedia,
+  CardContent,
+  IconButton,
+  Chip,
+  Button,
+  CircularProgress,
+  Box,
+  Stack,
+} from '@mui/material';
+import {
+  Search as SearchIcon,
+  Favorite,
+  FavoriteBorder,
+  NavigateBefore,
+  NavigateNext,
+} from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 import Header from './Header';
-import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+// API constants
+const BASE_URL = 'http://localhost:5000/api';
+const POKEMON_URL = `${BASE_URL}/pokemon`;
+const PLACEHOLDER =
+  'https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif';
 
-// API URL for the backend
-const BASE_URL = "http://localhost:5000/api";
-const POKEMON_URL = BASE_URL + "/pokemon";
-const PLACEHOLDER = "https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif";
+// Helpers
+const getIdFromUrl = (url) => url.split('/').filter(Boolean).pop();
+const getSpriteUrl = (url) =>
+  `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${getIdFromUrl(
+    url
+  )}.png`;
+const getGeneration = (pokedexId) => {
+  const id = Number(pokedexId);
+  if (id >= 1 && id <= 151) return 1;
+  if (id >= 152 && id <= 251) return 2;
+  if (id >= 252 && id <= 386) return 3;
+  if (id >= 387 && id <= 493) return 4;
+  if (id >= 494 && id <= 649) return 5;
+  if (id >= 650 && id <= 721) return 6;
+  if (id >= 722 && id <= 809) return 7;
+  if (id >= 810 && id <= 898) return 8;
+  if (id >= 899 && id <= 1010) return 9;
+  return 0;
+};
 
-// Get the numeric ID out of a PokéAPI URL
-const getIdFromUrl = url =>
-  url.split("/").filter(Boolean).pop();
+// Generation options and their first Pokédex IDs
+const ALL_GEN_OPTIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+const FIRST_ID_BY_GEN = {
+  1: 1,
+  2: 152,
+  3: 252,
+  4: 387,
+  5: 494,
+  6: 650,
+  7: 722,
+  8: 810,
+  9: 899,
+};
 
-// Build the official-artwork sprite URL on GitHub
-const getSpriteUrl = url =>
-  `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${getIdFromUrl(url)}.png`;
-
-
-function Home() {
-  // States need to store relevant data
-  const [pokemonData, setPokemonData] = useState([]);
-  const [pokemonImages, setPokemonImages] = useState({});
+export default function Home() {
+  const navigate = useNavigate();
+  const [allPokemonList, setAllPokemonList] = useState([]); // name + url for all ~1118
+  const [pokemonData, setPokemonData] = useState([]); // paginated results for current page
+  const [enrichedPagePokemon, setEnrichedPagePokemon] = useState([]); // enriched for current page
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const location = useLocation();
-  const [currentPage, setCurrentPage] = useState(location.state?.page || 1);
+
+  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filteredPokemonData, setFilteredPokemonData] = useState([]);
-  const [favorites, setFavorites] = useState(JSON.parse(localStorage.getItem('favorites')) || {}); 
-  const [sortOrder, setSortOrder] = useState('Index Order'); 
-  const [allPokemon, setAllPokemon] = useState([]);
 
+  const [favorites, setFavorites] = useState(
+    JSON.parse(localStorage.getItem('favorites')) || {}
+  );
 
-  // On-mount, grab all names (PokéAPI max ~1118)
+  const [selectedGen, setSelectedGen] = useState('all'); // 'all', 1–9, or 'fav'
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // 1) Fetch all Pokémon names+URLs once, for universal search
   useEffect(() => {
     const fetchAll = async () => {
       try {
         const res = await axios.get(`${POKEMON_URL}?limit=2000`);
-        setAllPokemon(res.data.results);
+        setAllPokemonList(res.data.results);
       } catch (err) {
-        console.error("Error fetching full Pokémon list:", err);
+        console.error('Error fetching full Pokémon list:', err);
       }
     };
     fetchAll();
   }, []);
 
-  // Fetch Pokemon data from the backend each time curent page state changes
+  // 2) Fetch paginated Pokémon (48 per page)
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchPage = async () => {
+      setIsLoading(true);
+      setError(null);
       try {
-        const response = await axios.get(`${POKEMON_URL}?page=${currentPage}&limit=48`); // Axios call to fetch data on first 48 pokemons 
-        setPokemonData(response.data.results); // Set pokemon data state to the fetched result
-        setTotalPages(Math.ceil(response.data.count / 48)); // update total pages
-      } catch (error) { // Error handeling if Axios call failed
-        setError(error);
+        const res = await axios.get(`${POKEMON_URL}?page=${currentPage}&limit=48`);
+        const results = res.data.results;
+        setPokemonData(results);
+        setTotalPages(Math.ceil(res.data.count / 48));
+      } catch (err) {
+        setError(err);
+      } finally {
+        setIsLoading(false);
       }
     };
-    fetchData();
+    fetchPage();
   }, [currentPage]);
 
-  // Fetch Pokemon images from the backend each time pokemon data state changes
+  // 3) Enrich current page Pokémon with id, generation, spriteUrl
   useEffect(() => {
-    const fetchPokemonImages = async () => {
-      const images = {}; // image object used to store url pic of the corresponding pokemon's name (key)
-      for (const pokemon of pokemonData) {  // Loops through each pokemon object 
-        const imageUrl = await getPokemonImage(pokemon.url); // Helper function to get pokemon's image URL using pokemon.url property 
-        images[pokemon.name] = imageUrl; // hashes pokemon name as key with value as the image URL on pokemon 
-      }
-      setPokemonImages(images); // Sets pokemon image state as images object
-    };
-    fetchPokemonImages();
+    const enriched = pokemonData.map((p) => {
+      const id = getIdFromUrl(p.url);
+      const gen = getGeneration(id);
+      return {
+        name: p.name,
+        url: p.url,
+        id: Number(id),
+        generation: gen,
+        spriteUrl: getSpriteUrl(p.url),
+      };
+    });
+    setEnrichedPagePokemon(enriched);
   }, [pokemonData]);
 
-  // Fetch a single Pokemon image given its URL
-  const getPokemonImage = async (url) => {
-    try {
-      const response = await axios.get(url); // Axios call to fetched data on passed in pokemon URL
-      return response.data.sprites.other["official-artwork"].front_default;
-    } catch (error) {
-      console.error("Error fetching Pokemon image:", error); // Error handeling if Axios failed
-      return null;
-    }
-  };
-
-  // Filter out pokemon data based on search, index sort, name ascending sort, and name descending sort
-  useEffect(() => {
-
-    const source = searchQuery ? allPokemon : pokemonData;
-    let filtered = source.filter(p =>
-      p.name.toLowerCase().startsWith(searchQuery.toLowerCase())
+  // 4) Build enrichedSearchResults when searchQuery changes
+  const enrichedSearchResults = useMemo(() => {
+    if (searchQuery.trim() === '') return [];
+    const lower = searchQuery.toLowerCase();
+    // Filter allPokemonList by name substring
+    const matches = allPokemonList.filter((p) =>
+      p.name.toLowerCase().includes(lower)
     );
+    // Map each match to enriched object (id/generation/sprite)
+    return matches.map((p) => {
+      const id = getIdFromUrl(p.url);
+      const gen = getGeneration(id);
+      return {
+        name: p.name,
+        url: p.url,
+        id: Number(id),
+        generation: gen,
+        spriteUrl: getSpriteUrl(p.url),
+      };
+    });
+  }, [searchQuery, allPokemonList]);
 
-    // Sort by name if that option is chosen
-    if (sortOrder === 'Name Ascending') {
-      filtered = filtered.sort((a, b) => a.name.localeCompare(b.name));
-    }
-    // Sort by name if that option is chosen
-    if (sortOrder === 'Name Descending') {
-      filtered = filtered.sort((a, b) => b.name.localeCompare(a.name));
-    }
-    // Default sort : Pokedex Order
-  
-    setFilteredPokemonData(filtered);
-  }, [pokemonData, searchQuery, sortOrder]);
-
-  // Handle previous page button click
-  const handlePrevPage = () => {
-    setCurrentPage((currPage) => Math.max(currPage - 1, 1)); // Update current page state
-    setSearchQuery(""); // Clear search bar after paginating back
-  };
-
-  // Handle next page button click
-  const handleNextPage = () => {
-    setCurrentPage((currPage) => Math.min(currPage + 1, totalPages)); // Update current page state
-    setSearchQuery(""); // Clear search bar after paginating forward
-  };
-
-  // Handle search input change
-  const handleSearchInputChange = (event) => {
-    setSearchQuery(event.target.value); // set search state to search bar value
-  };
-
-  // Handles state of favorites
-  const toggleFavorite = (name) => {
-    const updatedFavorites = { ...favorites }; // set updatedFavorites to current favorites
-    if (favorites[name]) {
-      delete updatedFavorites[name]; // If it's currently a favorite, remove it.
+  // 5) Decide which list to display:
+  //    - If searchQuery non-empty: use enrichedSearchResults
+  //    - Else: take enrichedPagePokemon and apply selectedGen/favorites filter
+  const dataToDisplay = useMemo(() => {
+    if (searchQuery.trim() !== '') {
+      // 5a) If searching, filter by generation or favorites if needed
+      let list = [...enrichedSearchResults];
+      if (selectedGen === 'fav') {
+        list = list.filter((p) => favorites[p.name]);
+      } else if (selectedGen !== 'all') {
+        list = list.filter((p) => p.generation === Number(selectedGen));
+      }
+      return list;
     } else {
-      updatedFavorites[name] = true; // If it's not a favorite, add it to object with value of true
+      // 5b) Not searching: filter current page
+      let list = [...enrichedPagePokemon];
+      if (selectedGen === 'fav') {
+        list = list.filter((p) => favorites[p.name]);
+      } else if (selectedGen !== 'all') {
+        list = list.filter((p) => p.generation === Number(selectedGen));
+      }
+      return list;
     }
-    setFavorites(updatedFavorites); // Update favorites state
-    localStorage.setItem('favorites', JSON.stringify(updatedFavorites)); // Update local storage of favorites
+  }, [
+    searchQuery,
+    enrichedSearchResults,
+    enrichedPagePokemon,
+    selectedGen,
+    favorites,
+  ]);
+
+  const toggleFavorite = (name) => {
+    setFavorites((prev) => {
+      const updated = { ...prev };
+      if (updated[name]) {
+        delete updated[name];
+      } else {
+        updated[name] = true;
+      }
+      localStorage.setItem('favorites', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  // 6) Handle generation click: jump to page if not searching
+  const handleGenClick = (gen) => {
+    if (searchQuery.trim() !== '') {
+      // If searching, just set filter and stay on search results
+      setSelectedGen(gen);
+    } else {
+      if (gen === 'all' || gen === 'fav') {
+        setSelectedGen(gen);
+      } else {
+        const firstId = FIRST_ID_BY_GEN[gen];
+        const targetPage = Math.ceil(firstId / 48);
+        setSelectedGen(gen);
+        setCurrentPage(targetPage);
+      }
+    }
+  };
+
+  // 7) Navigate to details page on card click
+  const handleCardClick = (name) => {
+    navigate(`/pokemon/${name}`, { state: { fromPage: currentPage } });
   };
 
   if (error) {
-    return <div>Error: {error.message}</div>;
+    return (
+      <Box sx={{ p: 4, textAlign: 'center' }}>
+        <Typography variant="h6" color="error">
+          Error: {error.message}
+        </Typography>
+      </Box>
+    );
   }
 
-  if (!pokemonData.length) {
-    return <div>Loading...</div>;
-  }
   return (
-    <div>
-      {/* Header component for the page */}
-      <Header />
-      {/* Main container with padding and margin adjustments */}
-      <div className="container mx-auto px-4 pt-20">
-        {/* Search and Sort Controls */}
-        <div className="flex items-center justify-center w-full my-4 gap-2">
-          {/* Search Input */}
-          <Autocomplete
-            freeSolo
-            options={allPokemon.map(p => p.name)}
-            inputValue={searchQuery}
-            onInputChange={(e, value) => setSearchQuery(value)}
-            sx={{ width: 300, mr: 2 }}
-            renderInput={(params) => (
-              <TextField {...params} label="Search Pokémon" variant="outlined" />
-            )}
+    <Box>
+      {/* AppBar with title and search */}
+      <Header/>
+      <Box sx={{ p: 2, bgcolor: 'background.paper', mt:10}}>
+        <TextField
+          fullWidth
+          variant="outlined"
+          size="small"
+          placeholder="Search Pokémon"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
+        />
+      </Box>
+
+      {/* Generation & Filter Chips */}
+      <Box sx={{ p: 2, overflowX: 'auto', bgcolor: 'background.paper'}}>
+        <Stack direction="row" spacing={1}>
+          <Chip
+            label="All"
+            clickable
+            color={selectedGen === 'all' ? 'primary' : 'default'}
+            onClick={() => handleGenClick('all')}
           />
-          {/* Sort Dropdown */}
-          <FormControl variant="outlined" sx={{ m: 1, minWidth: 120 }}>
-            <InputLabel id="sort-label">Sort By</InputLabel>
-            <Select
-              labelId="sort-label"
-              id="sort-select"
-              value={sortOrder}
-              label="Sort By"
-              onChange={(e) => setSortOrder(e.target.value)} // Sets sort order when changes are made to dropdown box
-              
-            >
-              {/* Sort Dropdown Options */}
-              <MenuItem value="Index Order">Index Order</MenuItem>
-              <MenuItem value="Name Ascending">Name Ascending</MenuItem>
-              <MenuItem value="Name Descending">Name Descending</MenuItem>
-            </Select>
-          </FormControl>
-        </div>
-        {/* Display Pokémon Cards */}
-        <div className="flex flex-wrap justify-center">
-          {filteredPokemonData.map((pokemon, index) => ( // Based on current filtered data
-            <Link // Link used for routing to PokemonDetails component
-              to={{
-                pathname: `/pokemon/${pokemon.name}`,
-              }}
-              state={{ fromPage: currentPage }} // Store current pagination page number for back reference
-              key={index}
-              className="text-black no-underline"
-            >
-              {/* Pokemon Card */}
-              <Card
-              className="bg-white shadow-md p-4 rounded-md mb-6 flex flex-col items-center w-72 md:w-96 mr-4 md:mb-4 relative hover:shadow-lg transition-shadow duration-300 ease-in-out transform hover:-translate-y-1 hover:border-2 hover:border-red-500"
-              style={{ borderWidth: '3px', borderStyle: 'solid', boxShadow: "0px 2px 4px rgba(0,0,0,0.5)" }}
-              >
-                {/* Favorite Button */}
-                <Button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    toggleFavorite(pokemon.name); // Updates favorites state based on passed in key
-                  }}
-                  sx={{ position: 'absolute', top: 2, left: 2, color: "#C22E28"}}
-                >
-                  {favorites[pokemon.name] ? <Favorite color="error" /> : <FavoriteBorder />} {/* Renders either filled or empty heart if key (name) in object */}
-                </Button>
-                {/* Card Content */}
-                <CardContent>
-                  {/* Pokemon Name */}
-                  <Typography
-                    variant="h5"
-                    component="h2"
-                    className="text-xl font-bold text-center mb-2"
-                    style={{ textTransform: "uppercase" }}
-                  >
-                    {pokemon.name}
-                  </Typography>
-                  {/* Pokemon Image */}
-                  <div
-                    className="mt-2 w-32 h-32 bg-center bg-no-repeat bg-contain relative"
-                    style={{ backgroundImage: `url(${PLACEHOLDER})` }}
-                  >
-                    <img
-                      src={getSpriteUrl(pokemon.url)}
-                      alt={`Image of ${pokemon.name}`}
-                      loading="lazy"
-                      onLoad={e => {
-                        // once the real sprite has loaded, wipe out the spinner background
-                        e.currentTarget.parentNode.style.backgroundImage = "none";
-                      }}
-                      onError={e => {
-                        // if the sprite 404s, fall back to spinner
-                        e.currentTarget.src = PLACEHOLDER;
-                      }}
-                      className="absolute top-0 left-0 w-full h-full object-contain"
-                    />
-                  </div>
-                  {/* Pokemon Index */}
-                  <Typography
-                    variant="body2"
-                    color="textSecondary"
-                    style={{ position: 'absolute', top: '8px', right: '8px' }}
-                    className="text-sm font-bold text-gray-500"
-                  >
-                    #{(currentPage - 1) * 48 + index + 1}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Link>
+          <Chip
+            label="Favorites"
+            clickable
+            color={selectedGen === 'fav' ? 'primary' : 'default'}
+            icon={<Favorite />}
+            onClick={() => handleGenClick('fav')}
+          />
+          {ALL_GEN_OPTIONS.map((gen) => (
+            <Chip
+              key={gen}
+              label={`Gen ${gen}`}
+              clickable
+              color={selectedGen === gen ? 'primary' : 'default'}
+              onClick={() => handleGenClick(gen)}
+            />
           ))}
-        </div>
+        </Stack>
+      </Box>
 
-        {!searchQuery && (
-          <>
-            {/* Pagination Controls */}
-            <Box sx={{ // Displayed on far left middle
-              position: 'fixed', 
-              top: '50%', 
-              transform: 'translateY(-50%)', 
-              left: 0, 
-              zIndex: 1000, 
-              ml: { xs: 1, sm: 2 }  
-            }}>
-            <Button
-              onClick={handlePrevPage} // Goes back a pagination back
-              disabled={currentPage === 1} // Disabled when on first page
-              sx={{
-                  backgroundColor: '#C22E28',
-                  color: 'white',
-                  '&:disabled': {
-                      backgroundColor: 'rgba(194, 46, 40, 0.5)'
-                  },
-                  minWidth: { xs: '30px', sm: '40px' }, 
-                  padding: { xs: '6px 8px', sm: '8px 16px' },
-                  '&:hover': { backgroundColor: '#B22222' } 
-              }}
-              variant="contained"
-              startIcon={<NavigateBefore />}
-            />
+      {/* Display loading, empty, or grid */}
+      <Box sx={{ p: 2, position: 'relative' }}>
+        {isLoading ? (
+          <Box sx={{ textAlign: 'center', mt: 4 }}>
+            <CircularProgress />
           </Box>
-        </>
-        )}
-        {!searchQuery && (
-          <>
-            <Box sx={{  // Displayed on far right middle
-              position: 'fixed', 
-              top: '50%', 
-              transform: 'translateY(-50%)', 
-              right: 0, 
-              zIndex: 1000, 
-              mr: { xs: 1, sm: 2 } 
-              
-            }}>
-            <Button
-              onClick={handleNextPage} // Goes forward a pagination back
-              disabled={currentPage === totalPages} // Disabled when on last page
-              sx={{
-                  backgroundColor: '#C22E28',
-                  color: 'white',
-                  '&:disabled': {
-                      backgroundColor: 'rgba(194, 46, 40, 0.5)'
-                  },
-                  minWidth: { xs: '30px', sm: '40px' },  
-                  padding: { xs: '6px 8px', sm: '8px 16px' }, 
-                  '&:hover': { backgroundColor: '#B22222' }
-              }}
-              variant="contained"
-              endIcon={<NavigateNext />}
-            />
-          </Box>
-        </>
+        ) : dataToDisplay.length === 0 ? (
+          <Typography variant="h6" align="center" color="text.secondary">
+            {selectedGen === 'fav'
+              ? 'No favorites match.'
+              : 'No Pokémon match your criteria.'}
+          </Typography>
+        ) : (
+          <Grid container spacing={2}>
+            {dataToDisplay.map((p) => (
+              <Grid item xs={6} sm={4} md={3} lg={2} key={p.name}>
+                <Card
+                  sx={{
+                    position: 'relative',
+                    cursor: 'pointer',
+                    transition: 'transform 0.2s, box-shadow 0.2s',
+                    '&:hover': {
+                      transform: 'translateY(-8px)',
+                      boxShadow: 6,
+                    },
+                  }}
+                  onClick={() => handleCardClick(p.name)}
+                >
+                  {/* Favorite Icon */}
+                  <IconButton
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFavorite(p.name);
+                    }}
+                    sx={{
+                      position: 'absolute',
+                      top: 4,
+                      right: 4,
+                      zIndex: 1,
+                      color: favorites[p.name] ? 'red' : 'rgba(0,0,0,0.4)',
+                    }}
+                  >
+                    {favorites[p.name] ? <Favorite /> : <FavoriteBorder />}
+                  </IconButton>
+
+                  {/* Image */}
+                  <CardMedia
+                    component="img"
+                    src={p.spriteUrl}
+                    alt={p.name}
+                    loading="lazy"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = PLACEHOLDER;
+                    }}
+                    sx={{
+                      width: '100%',
+                      aspectRatio: '1 / 1',
+                      objectFit: 'contain',
+                      bgcolor: 'rgba(0,0,0,0.05)',
+                    }}
+                  />
+
+                  {/* Name & Number */}
+                  <CardContent sx={{ textAlign: 'center', py: 1 }}>
+                    <Typography
+                      variant="subtitle1"
+                      sx={{ textTransform: 'capitalize', fontWeight: 'bold' }}
+                    >
+                      {p.name}
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      sx={{ display: 'block' }}
+                    >
+                      #{p.id.toString().padStart(3, '0')}
+                    </Typography>
+                    <Chip
+                      label={`Gen ${p.generation}`}
+                      size="small"
+                      sx={{ mt: 1 }}
+                    />
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
         )}
 
-        
-      </div>
-    </div>
+        {/* Floating Pagination Arrows (hidden during search) */}
+        {!searchQuery.trim() && (
+          <>
+            {/* Left Arrow */}
+            <IconButton
+              onClick={() => {
+                setCurrentPage((prev) => Math.max(prev - 1, 1));
+                setSearchQuery('');
+              }}
+              disabled={currentPage === 1}
+              sx={{
+                position: 'fixed',
+                top: '50%',
+                left: 8,
+                transform: 'translateY(-50%)',
+                backgroundColor: '#C22E28',
+                color: 'white',
+                '&:hover': { backgroundColor: '#B22222' },
+                '&:disabled': {
+                  backgroundColor: 'rgba(194,46,40,0.5)',
+                },
+                zIndex: 1000,
+              }}
+            >
+              <NavigateBefore />
+            </IconButton>
+
+            {/* Right Arrow */}
+            <IconButton
+              onClick={() => {
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+                setSearchQuery('');
+              }}
+              disabled={currentPage === totalPages}
+              sx={{
+                position: 'fixed',
+                top: '50%',
+                right: 8,
+                transform: 'translateY(-50%)',
+                backgroundColor: '#C22E28',
+                color: 'white',
+                '&:hover': { backgroundColor: '#B22222' },
+                '&:disabled': {
+                  backgroundColor: 'rgba(194,46,40,0.5)',
+                },
+                zIndex: 1000,
+              }}
+            >
+              <NavigateNext />
+            </IconButton>
+          </>
+        )}
+      </Box>
+
+      {/* Page Indicator (hidden during search) */}
+      {!searchQuery.trim() && (
+        <Box
+          sx={{
+            position: 'fixed',
+            bottom: 16,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            bgcolor: 'background.paper',
+            px: 2,
+            py: 1,
+            borderRadius: 2,
+            boxShadow: 3,
+          }}
+        >
+          <Typography variant="body2">
+            Page {currentPage} / {totalPages}
+          </Typography>
+        </Box>
+      )}
+    </Box>
   );
 }
-export default Home;
