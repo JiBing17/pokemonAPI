@@ -34,6 +34,10 @@ function Header() {
                     />
                 </Box>
                 {/** Games Link **/}
+                <IconButton component={Link} to="/sets" color="inherit" sx={{ mr: 2 }}>
+                    <Collections/>
+                </IconButton>
+                {/** Games Link **/}
                 <IconButton component={Link} to="/games" color="inherit" sx={{ mr: 2 }}>
                     <Collections/>
                 </IconButton>

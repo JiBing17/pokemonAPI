@@ -12,6 +12,7 @@ import Movies from './Movies';
 import Games from './Games';
 import MovieDetail from './MovieDetail.js';
 import Items from './Items.js';
+import SetGallery from './SetGallery.js';
 // ensures that only authenticated users can access the route
 function PrivateRoute({ children }) {
     const { isAuthenticated } = useAuth();
@@ -38,6 +39,7 @@ function App() {
                     <Route path="/games" element={<Games />} />
                     <Route path="/movie/:id" element={<MovieDetail />} />
                     <Route path="/items" element={<Items />} />
+                    <Route path="/sets" element={<SetGallery />} />
 
 
                 </Routes>
