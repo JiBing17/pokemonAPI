@@ -21,6 +21,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import Header from './Header';
+import SetDetailsDrawer from './SetDetailsDrawer';
 
 const SETS_ENDPOINT = 'https://api.pokemontcg.io/v2/sets';
 const SETS_PER_PAGE = 16;
@@ -31,7 +32,8 @@ export default function SetGallery() {
   const [error, setError] = useState(null);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
-
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [activeSetId, setActiveSetId] = useState(null);
   useEffect(() => {
     const fetchSets = async () => {
       try {
@@ -206,7 +208,8 @@ export default function SetGallery() {
                   <Button
                     variant="contained"
                     fullWidth
-                    onClick={() => alert(`View details for ${set.name}`)}
+                    // onClick={() => alert(`View details for ${set.name}`)}
+                    onClick={() => { setActiveSetId(set.id); setDetailsOpen(true); }}
                     sx={{ textTransform: 'none' }}
                   >
                     View Set Details
@@ -256,6 +259,11 @@ export default function SetGallery() {
           >
             <NavigateNextIcon />
           </IconButton>
+            <SetDetailsDrawer    
+              open={detailsOpen}
+              onClose={() => setDetailsOpen(false)}    
+              setId={activeSetId}
+           />
         </>
       )}
     </>

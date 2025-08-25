@@ -40,8 +40,6 @@ function App() {
                     <Route path="/movie/:id" element={<MovieDetail />} />
                     <Route path="/items" element={<Items />} />
                     <Route path="/sets" element={<SetGallery />} />
-
-
                 </Routes>
             </Router>
         </AuthProvider>
