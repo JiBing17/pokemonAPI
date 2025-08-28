@@ -16,6 +16,8 @@ import {
   Chip,
   Stack,
   IconButton,
+  useTheme,
+  alpha,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
@@ -26,7 +28,17 @@ import SetDetailsDrawer from './SetDetailsDrawer';
 const SETS_ENDPOINT = 'https://api.pokemontcg.io/v2/sets';
 const SETS_PER_PAGE = 16;
 
+// brand red
+const POKE_RED = '#C22E28';
+const darken = (hex, amt = 0.14) => {
+  const clamp = (n) => Math.max(0, Math.min(255, Math.round(n)));
+  const [r, g, b] = hex.replace('#', '').match(/.{1,2}/g).map((x) => parseInt(x, 16));
+  return `rgb(${clamp(r * (1 - amt))}, ${clamp(g * (1 - amt))}, ${clamp(b * (1 - amt))})`;
+};
+
 export default function SetGallery() {
+  const theme = useTheme();
+
   const [sets, setSets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -34,6 +46,7 @@ export default function SetGallery() {
   const [page, setPage] = useState(1);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [activeSetId, setActiveSetId] = useState(null);
+
   useEffect(() => {
     const fetchSets = async () => {
       try {
@@ -65,7 +78,7 @@ export default function SetGallery() {
   if (loading) {
     return (
       <Box mt={10} textAlign="center">
-        <CircularProgress />
+        <CircularProgress sx={{ color: POKE_RED }} />
       </Box>
     );
   }
@@ -81,7 +94,17 @@ export default function SetGallery() {
   return (
     <>
       <Header />
-      <Container sx={{ mt: 12, pb: 6 }}>
+
+      <Container
+        sx={{
+          mt: 12,
+          pb: 6,
+          // subtle background pattern with red tint
+          backgroundImage: `radial-gradient(${alpha(POKE_RED, 0.06)} 1px, transparent 1px)`,
+          backgroundSize: '16px 16px',
+          borderRadius: 2,
+        }}
+      >
         {/* Search Field */}
         <TextField
           variant="outlined"
@@ -95,11 +118,18 @@ export default function SetGallery() {
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <SearchIcon />
+                <SearchIcon sx={{ color: alpha(POKE_RED, 0.8) }} />
               </InputAdornment>
             ),
           }}
-          sx={{ mb: 4 }}
+          sx={{
+            mb: 4,
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': { borderColor: alpha(POKE_RED, 0.35) },
+              '&:hover fieldset': { borderColor: POKE_RED },
+              '&.Mui-focused fieldset': { borderColor: POKE_RED, borderWidth: 2 },
+            },
+          }}
         />
 
         {/* Sets Grid */}
@@ -107,34 +137,38 @@ export default function SetGallery() {
           {paginatedSets.map((set) => (
             <Grid item xs={12} sm={6} md={4} lg={3} key={set.id}>
               <Card
-                elevation={4}
+                elevation={0}
                 sx={{
                   display: 'flex',
                   flexDirection: 'column',
                   height: '100%',
-                  borderRadius: 2,
-                  transition: 'transform 0.3s, box-shadow 0.3s',
+                  borderRadius: 3,
+                  bgcolor: theme.palette.mode === 'dark' ? '#151515' : '#fff',
+                  border: `1px solid ${alpha(POKE_RED, 0.25)}`,
+                  transition: 'transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease',
                   '&:hover': {
                     transform: 'translateY(-6px)',
-                    boxShadow: 8,
+                    borderColor: POKE_RED,
+                    boxShadow: `0 10px 26px ${alpha('#000', 0.2)}`,
                   },
-                  bgcolor: 'background.paper',
                 }}
               >
                 {set.images?.logo && (
                   <Box
                     sx={{
-                      bgcolor: 'background.default',
+                      bgcolor: alpha(POKE_RED, 0.06),
                       p: 2,
                       display: 'flex',
                       justifyContent: 'center',
+                      borderBottom: `1px solid ${alpha(POKE_RED, 0.25)}`,
                     }}
                   >
                     <CardMedia
                       component="img"
                       src={set.images.logo}
                       alt={set.name}
-                      sx={{ height: 64, objectFit: 'contain' }}
+                      sx={{ height: 64, objectFit: 'contain', filter: 'drop-shadow(0 1px 0 rgba(0,0,0,.25))' }}
+                      loading="lazy"
                     />
                   </Box>
                 )}
@@ -143,7 +177,7 @@ export default function SetGallery() {
                   <Typography
                     variant="h6"
                     gutterBottom
-                    sx={{ fontWeight: 'bold', textAlign: 'center' }}
+                    sx={{ fontWeight: 900, textAlign: 'center' }}
                   >
                     {set.name}
                   </Typography>
@@ -153,9 +187,10 @@ export default function SetGallery() {
                       label={set.series}
                       size="small"
                       sx={{
-                        bgcolor: 'primary.light',
-                        color: '#fff',
-                        fontWeight: 500,
+                        bgcolor: alpha(POKE_RED, 0.12),
+                        border: `1px solid ${alpha(POKE_RED, 0.3)}`,
+                        color: darken(POKE_RED, 0.35),
+                        fontWeight: 700,
                       }}
                     />
                     <Typography variant="body2" color="text.secondary">
@@ -166,22 +201,14 @@ export default function SetGallery() {
                   <Box sx={{ mt: 2, textAlign: 'center' }}>
                     <Typography variant="body2" color="text.secondary">
                       Total Cards:&nbsp;
-                      <Typography
-                        component="span"
-                        variant="body2"
-                        sx={{ fontWeight: 'bold' }}
-                      >
+                      <Typography component="span" variant="body2" sx={{ fontWeight: 800 }}>
                         {set.total}
                       </Typography>
                     </Typography>
                     {set.printedTotal != null && (
                       <Typography variant="body2" color="text.secondary">
                         Printed Total:&nbsp;
-                        <Typography
-                          component="span"
-                          variant="body2"
-                          sx={{ fontWeight: 'bold' }}
-                        >
+                        <Typography component="span" variant="body2" sx={{ fontWeight: 800 }}>
                           {set.printedTotal}
                         </Typography>
                       </Typography>
@@ -192,11 +219,7 @@ export default function SetGallery() {
                     <Box sx={{ mt: 1, textAlign: 'center' }}>
                       <Typography variant="body2" color="text.secondary">
                         Code:&nbsp;
-                        <Typography
-                          component="span"
-                          variant="body2"
-                          sx={{ fontWeight: 'bold' }}
-                        >
+                        <Typography component="span" variant="body2" sx={{ fontWeight: 800 }}>
                           {set.ptcgoCode}
                         </Typography>
                       </Typography>
@@ -204,13 +227,18 @@ export default function SetGallery() {
                   )}
                 </CardContent>
 
-                <Box sx={{ p: 2, textAlign: 'center' }}>
+                <Box sx={{ p: 2, pt: 0, textAlign: 'center' }}>
                   <Button
                     variant="contained"
                     fullWidth
-                    // onClick={() => alert(`View details for ${set.name}`)}
                     onClick={() => { setActiveSetId(set.id); setDetailsOpen(true); }}
-                    sx={{ textTransform: 'none' }}
+                    sx={{
+                      textTransform: 'none',
+                      fontWeight: 800,
+                      bgcolor: POKE_RED,
+                      '&:hover': { bgcolor: darken(POKE_RED, 0.1) },
+                      boxShadow: 'none',
+                    }}
                   >
                     View Set Details
                   </Button>
@@ -232,10 +260,10 @@ export default function SetGallery() {
               top: '50%',
               left: 8,
               transform: 'translateY(-50%)',
-              bgcolor: 'primary.main',
+              bgcolor: alpha(POKE_RED, 0.9),
               color: '#fff',
-              '&:hover': { bgcolor: 'primary.dark' },
-              '&:disabled': { bgcolor: 'rgba(25,118,210,0.5)' },
+              '&:hover': { bgcolor: POKE_RED },
+              '&.Mui-disabled': { bgcolor: alpha(POKE_RED, 0.35) },
               zIndex: 1000,
             }}
           >
@@ -250,22 +278,24 @@ export default function SetGallery() {
               top: '50%',
               right: 8,
               transform: 'translateY(-50%)',
-              bgcolor: 'primary.main',
+              bgcolor: alpha(POKE_RED, 0.9),
               color: '#fff',
-              '&:hover': { bgcolor: 'primary.dark' },
-              '&:disabled': { bgcolor: 'rgba(25,118,210,0.5)' },
+              '&:hover': { bgcolor: POKE_RED },
+              '&.Mui-disabled': { bgcolor: alpha(POKE_RED, 0.35) },
               zIndex: 1000,
             }}
           >
             <NavigateNextIcon />
           </IconButton>
-            <SetDetailsDrawer    
-              open={detailsOpen}
-              onClose={() => setDetailsOpen(false)}    
-              setId={activeSetId}
-           />
         </>
       )}
+
+      {/* always mount the drawer so it works while searching too */}
+      <SetDetailsDrawer
+        open={detailsOpen}
+        onClose={() => setDetailsOpen(false)}
+        setId={activeSetId}
+      />
     </>
   );
 }
