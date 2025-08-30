@@ -1,171 +1,414 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from './AuthContext';
-import { TextField, Button, Paper, Typography, Container, Box } from '@mui/material';
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate, Link } from "react-router-dom";
+import {
+  Box,
+  Grid,
+  Paper,
+  Typography,
+  TextField,
+  Button,
+  IconButton,
+  InputAdornment,
+  Divider,
+  Alert,
+  Chip,
+  Stack,
+} from "@mui/material";
+import { keyframes } from "@mui/system";
+import { Visibility, VisibilityOff, Shield, Bolt } from "@mui/icons-material";
+import { useAuth } from "./AuthContext";
 
-function Login() {
-    // States used to store username and password
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const { setIsAuthenticated } = useAuth(); // Function used for authenticating users when login is successfull
-    const navigate = useNavigate(); // Function used to navigate different routes (Homes.js if login succeeds)
+/**
+ * LOGIN — PokéWorld
+ * - Calm left visual panel
+ * - Right form with generous spacing
+ * - No guest option
+ */
+export default function Login() {
+  // ---- Form state
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPw, setShowPw] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+  const { setIsAuthenticated } = useAuth?.() || { setIsAuthenticated: () => {} };
 
-    const handleLogin = async () => {
-        try {
-            // Makes an asynchronous POST request to the login endpoint of the backend API
-            const response = await axios.post('http://localhost:5000/api/users/login', { username, password });
+  const handleLogin = async (e) => {
+    e?.preventDefault?.();
+    if (loading) return;
+    setError("");
+    setLoading(true);
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/users/login",
+        { username, password },
+        { headers: { "Content-Type": "application/json" } }
+      );
+      if (res.status === 200) {
+        setIsAuthenticated(true);
+        navigate("/");
+      }
+    } catch (err) {
+      const message =
+        err?.response?.data?.message || "Login failed. Check your credentials.";
+      setError(message);
+      console.error("Login error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-            // Successful request, set user as authenticated and redirect to homes page
-            if (response.status === 200) {
-                setIsAuthenticated(true);
-                navigate('/');
-            }
-            // Sends alert due to unsuccessful request for login
-        } catch (error) {
-            alert('Login failed! ' + (error.response?.data?.message || ''));
-            console.error('Login error:', error);
-        }
-    };
+  // ---- Motion prefs
+  const prefersReducedMotion =
+    typeof window !== "undefined" &&
+    window.matchMedia &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    // Login Form
-    return (
-        <div style={{ minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)' }}>
-            {/* Background Gradient */}
-            <Container maxWidth="sm" sx={{ display: 'flex', flexDirection: 'column' , alignItems: 'center'}}>
+  // ---- Keyframes
+  const slowDrift = keyframes`
+    0% { transform: translateY(0px) }
+    50% { transform: translateY(-12px) }
+    100% { transform: translateY(0px) }
+  `;
+  const slowDrift2 = keyframes`
+    0% { transform: translateY(0px) }
+    50% { transform: translateY(10px) }
+    100% { transform: translateY(0px) }
+  `;
+  const sweep = keyframes`
+    0% { transform: translateX(-40%) }
+    100% { transform: translateX(40%) }
+  `;
+
+  return (
+    <Grid
+      container
+      sx={{
+        minHeight: "100vh",
+        bgcolor: "#0b0b0f",
+        px: { xs: 0, md: 2, lg: 4 },
+        py: { xs: 0, md: 2, lg: 4 },
+      }}
+    >
+      {/* LEFT: Calm Visual Panel */}
+      <Grid
+        item
+        xs={12}
+        lg={7}
+        sx={{
+          position: "relative",
+          display: { xs: "none", lg: "flex" },
+          alignItems: "stretch",
+          overflow: "hidden",
+          borderRadius: { lg: 4 },
+          pr: { lg: 2 },
+          background:
+            "radial-gradient(60% 50% at 15% 15%, rgba(255,122,24,0.55) 0%, rgba(255,122,24,0) 60%)," +
+            "radial-gradient(60% 50% at 80% 10%, rgba(239,68,68,0.55) 0%, rgba(239,68,68,0) 60%)," +
+            "radial-gradient(60% 55% at 50% 90%, rgba(250,204,21,0.55) 0%, rgba(250,204,21,0) 60%)",
+        }}
+      >
+        {/* Dark overlay for contrast */}
+        <Box
+          sx={{
+            position: "absolute",
+            inset: 0,
+            background:
+              "linear-gradient(180deg, rgba(3, 7, 18, 0.55) 0%, rgba(3,7,18,0.45) 30%, rgba(0,0,0,0.35) 100%)",
+          }}
+        />
+
+        {/* Gentle sweeping light */}
+        <Box
+          aria-hidden
+          sx={{
+            position: "absolute",
+            top: "20%",
+            left: "-30%",
+            width: "160%",
+            height: 240,
+            borderRadius: 999,
+            filter: "blur(40px)",
+            opacity: 0.18,
+            background:
+              "linear-gradient(90deg, rgba(255,255,255,0.20), rgba(250,204,21,0.22), rgba(239,68,68,0.20))",
+            animation: prefersReducedMotion ? "none" : `${sweep} 30s linear infinite alternate`,
+          }}
+        />
+
+        {/* Subtle decorative blobs */}
+        <Box
+          aria-hidden
+          sx={{
+            position: "absolute",
+            top: 80,
+            left: -60,
+            width: 260,
+            height: 260,
+            bgcolor: "rgba(255,255,255,0.07)",
+            filter: "blur(12px)",
+            borderRadius: "50%",
+            animation: prefersReducedMotion ? "none" : `${slowDrift} 12s ease-in-out infinite`,
+          }}
+        />
+        <Box
+          aria-hidden
+          sx={{
+            position: "absolute",
+            bottom: 120,
+            right: 40,
+            width: 200,
+            height: 200,
+            bgcolor: "rgba(255,255,255,0.06)",
+            filter: "blur(12px)",
+            borderRadius: "50%",
+            animation: prefersReducedMotion ? "none" : `${slowDrift2} 10s ease-in-out infinite`,
+          }}
+        />
+
+        {/* Content container */}
+        <Box
+          sx={{
+            position: "relative",
+            zIndex: 1,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            gap: 6,
+            width: "100%",
+            px: { lg: 10, xl: 14 },
+            py: { lg: 10, xl: 14 },
+          }}
+        >
+          {/* Top tokens */}
+          <Stack direction="row" spacing={1.25}>
+            <Chip
+              icon={<Bolt sx={{ color: "#fde047 !important" }} />}
+              label="PokéWorld"
+              size="small"
+              sx={{
+                bgcolor: "rgba(255,255,255,0.08)",
+                color: "rgba(255,255,255,0.95)",
+                border: "1px solid rgba(255,255,255,0.18)",
+                "& .MuiChip-icon": { ml: 0.5, color: "rgba(255,255,255,0.9)" },
+              }}
+            />
+            <Chip
+              label="Secure access"
+              size="small"
+              sx={{
+                bgcolor: "rgba(255,255,255,0.06)",
+                color: "rgba(255,255,255,0.90)",
+                border: "1px solid rgba(255,255,255,0.14)",
+              }}
+            />
+          </Stack>
+
+          {/* Headline block */}
+          <Box>
             <Typography
-                variant="h4"
-                component="h1"
-                sx={{
-                    mb: 2,
-                    fontWeight: "bold",
-                    display: "inline-block", 
-                }}
-                >
-                <Box
-                    sx={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    background: "white",
-                    borderRadius: "50px",
-                    paddingX: "24px", // Horizontal padding for oval shape
-                    paddingY: "8px", // Vertical padding for oval shape
-                    boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.2)",
-                    }}
-                >
-                    <span
-                    style={{
-                        background: "linear-gradient(to right, #C22E28, #FFCC00)", // Gradient colors
-                        WebkitBackgroundClip: "text", // Clips the gradient to the text
-                        WebkitTextFillColor: "transparent", // Makes non-gradient parts transparent
-                        fontWeight: "bold", // Optional for styling
-                    }}
+              variant="h2"
+              sx={{
+                fontSize: { lg: 56, xl: 64 },
+                fontWeight: 900,
+                lineHeight: 1.04,
+                letterSpacing: -0.3,
+                mb: 2.5,
+                background: "linear-gradient(90deg,#ef4444,#f59e0b,#facc15)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                textWrap: "balance",
+              }}
+            >
+              Welcome back to PokéWorld — your journey continues.
+            </Typography>
+
+            <Typography
+              sx={{
+                maxWidth: 680,
+                color: "rgba(255,255,255,.88)",
+                fontSize: { lg: 18, xl: 20 },
+                lineHeight: 1.75,
+              }}
+            >
+              Access your collection, sync progress across devices, and stay secure with encrypted
+              sessions.
+            </Typography>
+          </Box>
+
+          {/* Feature strip */}
+          <Stack direction="row" spacing={3} sx={{ color: "rgba(255,255,255,.80)" }}>
+            <Stack direction="row" spacing={1} alignItems="center">
+              <Shield fontSize="small" />
+              <Typography variant="body2">Encrypted transport</Typography>
+            </Stack>
+            <Stack direction="row" spacing={1} alignItems="center">
+              <Bolt fontSize="small" />
+              <Typography variant="body2">Fast & resilient</Typography>
+            </Stack>
+          </Stack>
+
+          {/* Footer note */}
+          <Typography variant="caption" sx={{ color: "rgba(255,255,255,.55)", mt: 6 }}>
+            © {new Date().getFullYear()} PokéWorld
+          </Typography>
+        </Box>
+      </Grid>
+
+      {/* RIGHT: Form Panel */}
+      <Grid
+        item
+        xs={12}
+        lg={5}
+        sx={{
+          display: "grid",
+          placeItems: "center",
+          pl: { lg: 2 },
+        }}
+      >
+        <Paper
+          elevation={0}
+          sx={{
+            width: "100%",
+            maxWidth: 560,
+            borderRadius: { xs: 0, lg: 4 },
+            bgcolor: "rgba(255,255,255,0.06)",
+            border: { lg: "1px solid rgba(255,255,255,.10)" },
+            backdropFilter: "blur(10px)",
+            color: "#fff",
+          }}
+        >
+          <Box sx={{ px: { xs: 3.5, md: 5, xl: 6 }, pt: { xs: 3.5, md: 5, xl: 6 } }}>
+            <Typography variant="h4" fontWeight={800} sx={{ letterSpacing: -0.2 }}>
+              Welcome back
+            </Typography>
+            <Typography variant="body1" sx={{ color: "rgba(255,255,255,.78)", mt: 1 }}>
+              Please sign in to continue.
+            </Typography>
+          </Box>
+
+          <Divider sx={{ my: { xs: 2.5, md: 3 }, borderColor: "rgba(255,255,255,.10)" }} />
+
+          <Box
+            component="form"
+            onSubmit={handleLogin}
+            noValidate
+            sx={{
+              px: { xs: 3.5, md: 5, xl: 6 },
+              pb: { xs: 3.5, md: 5, xl: 6 },
+            }}
+          >
+            <TextField
+              fullWidth
+              label="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              margin="normal"
+              autoFocus
+              required
+              autoComplete="username"
+              InputLabelProps={{
+                sx: {
+                  color: "rgba(255,255,255,.9)",
+                  "&.Mui-focused": { color: "#f59e0b" }, 
+                },
+              }}
+              InputProps={{
+                sx: {
+                  color: "#fff",
+                  "& .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(255,255,255,.20)" },
+                  "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(255,255,255,.40)" },
+                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#f59e0b" },
+                  "&.Mui-focused": { boxShadow: "0 0 0 2px rgba(245,158,11,0.35)" },         
+                  "& input": { caretColor: "#f59e0b" },                                    
+                },
+              }}
+            />
+
+            <TextField
+              fullWidth
+              label="Password"
+              type={showPw ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              margin="normal"
+              required
+              autoComplete="current-password"
+              InputLabelProps={{
+                sx: {
+                  color: "rgba(255,255,255,.9)",
+                  "&.Mui-focused": { color: "#f59e0b" },
+                },
+              }}
+              InputProps={{
+                sx: {
+                  color: "#fff",
+                  "& .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(255,255,255,.20)" },
+                  "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(255,255,255,.40)" },
+                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#f59e0b" }, 
+                  "&.Mui-focused": { boxShadow: "0 0 0 2px rgba(245,158,11,0.35)" },          
+                  "& input": { caretColor: "#f59e0b" },                                        
+                },
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label={showPw ? "Hide password" : "Show password"}
+                      onClick={() => setShowPw((s) => !s)}
+                      edge="end"
+                      sx={{
+                        color: "rgba(255,255,255,.9)",
+                        "&:hover": { color: "#f59e0b" }, 
+                      }}
                     >
-                    PokéWeb
-                    </span>
-                </Box>
-                </Typography>
-                <Box sx={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center', boxShadow: "0px 2px 4px rgba(0,0,0,0.5)" }}>
-                    <Paper sx={{ padding: 4, width: '100%' }}>
-                        {/** Login Title **/}
-                        <Typography component="h1" variant="h5" textAlign="center">
-                            Login
-                        </Typography>
-                        {/** Username Field **/}
-                        <TextField
-                            variant="outlined"
-                            margin="normal"
-                            required
-                            fullWidth
-                            label="Username"
-                            autoFocus
-                            value={username}
-                            onChange={e => setUsername(e.target.value)}
-                            sx={{
-                                mt: 2,
-                                '& .MuiOutlinedInput-root': {
+                      {showPw ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
 
-                                    // Username text field border
-                                    '& fieldset': {
-                                        borderColor: '#C22E28',
-                                    },
-                                    // Username text field border (hover)
-                                    '&:hover fieldset': {
-                                        borderColor: '#C22E28',
-                                    },
-                                    // Username text field border (selected)
-                                    '&.Mui-focused fieldset': {
-                                        borderColor: '#C22E28',
-                                    },
-                                },
-                                // Username placeholder text 
-                                '& .MuiInputLabel-root': {
-                                  color: 'black',
-                                },
-                                // Username placeholder text (selected)
-                                '& .MuiInputLabel-root.Mui-focused': {
-                                  color: 'black',
-                                }
-                              }}
-                        />
-                        {/** Password Field **/}
-                        <TextField
-                            variant="outlined"
-                            margin="normal"
-                            required
-                            fullWidth
-                            label="Password"
-                            type="password"
-                            value={password}
-                            onChange={e => setPassword(e.target.value)}
-                            sx={{
-                                mt: 2,
-                                '& .MuiOutlinedInput-root': {
+            {error && (
+              <Alert
+                severity="error"
+                sx={{ mt: 2, bgcolor: "rgba(244,67,54,.15)", color: "#ffb4ab" }}
+              >
+                {error}
+              </Alert>
+            )}
 
-                                    // Password text field border                                
-                                    '& fieldset': {
-                                        borderColor: '#C22E28',
-                                    },
-                                    // Password text field border (hover)                                
-                                    '&:hover fieldset': {
-                                        borderColor: '#C22E28',
-                                    },
-                                    // Password text field border (selected)                                
-                                    '&.Mui-focused fieldset': {
-                                        borderColor: '#C22E28',
-                                    },
-                                },
-                                // Password placeholder text 
-                                '& .MuiInputLabel-root': {
-                                  color: 'black',
-                                },
-                                // Password placeholder text (selected)
-                                '& .MuiInputLabel-root.Mui-focused': {
-                                  color: 'black',
-                                }
-                              }}
-                        />
-                        {/** Submit Login Button **/}
-                        <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            color="primary"
-                            onClick={handleLogin}
-                            sx={{ mt: 3, mb: 2, backgroundColor: "#C22E28", '&:hover': { backgroundColor: '#B22222'}}}
-                        >
-                            Login
-                        </Button>
-                        {/** Switch to Create Account Form Link **/}
-                        <Link to="/register" style={{ textDecoration: 'none'}}>
-                            <Button variant="text" sx={{color: "#C22E28"}}>Don't have an account? Sign Up</Button>
-                        </Link>
-                    </Paper>
-                </Box>
-            </Container>
-        </div>
-    );
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              disableElevation
+              disabled={loading}
+              sx={{
+                mt: 3,
+                py: 1.4,
+                fontWeight: 800,
+                letterSpacing: 0.2,
+                textTransform: "none",
+                fontSize: 16,
+                background: "linear-gradient(90deg,#ef4444,#f59e0b)",
+                "&:hover": { filter: "brightness(0.96)" },
+              }}
+            >
+              {loading ? "Signing in…" : "Sign in"}
+            </Button>
+
+            <Box sx={{ textAlign: "center", mt: 3 }}>
+              <Typography variant="body2" sx={{ color: "rgba(255,255,255,.82)" }}>
+                Don&apos;t have an account?{" "}
+                <Link to="/register" style={{ color: "#fde047", fontWeight: 700 }}>
+                  Sign up
+                </Link>
+              </Typography>
+            </Box>
+          </Box>
+        </Paper>
+      </Grid>
+    </Grid>
+  );
 }
-
-export default Login;
