@@ -199,7 +199,7 @@ export default function Movies() {
             <div className="absolute top-1/2 left-1/4 transform -translate-x-1/2 -translate-y-1/2 max-w-md bg-black bg-opacity-50 p-6 rounded-lg text-white">
               <div className="mb-2">
                 <span className="font-semibold">
-                  ⭐ {featuredMovies[heroIndex].vote_average}
+                  ⭐ {featuredMovies[heroIndex].vote_average.toFixed(1)}
                 </span>
                 <span className="mx-2">|</span>
                 {featuredMovies[heroIndex].genre_ids.map((gId, idx) => {
