@@ -31,7 +31,10 @@ import {
   NavigateBefore,
   NavigateNext,
 } from '@mui/icons-material';
-import Header from './Header'; // Adjust if needed
+import Header from './Header';
+import { useTheme, alpha } from '@mui/material/styles';
+import { useMediaQuery, Stack, Tooltip } from '@mui/material';
+import Zoom from '@mui/material/Zoom';
 
 // PokéTCG API endpoints
 const POKETCG_BASE = 'https://api.pokemontcg.io/v2';
@@ -73,8 +76,11 @@ export default function CardBrowser() {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalCard, setModalCard] = useState(null);
 
-  // HEIGHT of the fixed Header (adjust if your Header is a different size)
   const HEADER_HEIGHT = 64;
+
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
 
   // Debounce search so API isn’t called on every keystroke
   const debounceTimer = useRef(null);
@@ -392,36 +398,21 @@ export default function CardBrowser() {
                         </Typography>
                       </Box>
 
-                      <Box>
-                        <Typography
-                          variant="caption"
-                          color="text.secondary"
-                          sx={{ display: 'block', mt: 1 }}
-                          noWrap
-                        >
-                          {card.set.name}
-                        </Typography>
+                      <Box sx={{ display: 'flex', justifyContent: 'center', gap: 0.5, mt: 0.5 }}>
                         {card.rarity && (
-                          <Typography
-                            variant="caption"
-                            color="text.secondary"
-                            noWrap
-                          >
-                            {card.rarity}
-                          </Typography>
+                          <Chip
+                            label={card.rarity}
+                            size="small"
+                            sx={{ fontSize: '0.65rem', height: 20 }}
+                          />
                         )}
-                        {price !== null && (
-                          <Typography
-                            variant="caption"
-                            color="success.main"
-                            sx={{ display: 'block', mt: 0.5 }}
-                          >
-                            <i
-                              className="fa-solid fa-coins"
-                              style={{ marginRight: 4, color: '#FFD700', fontWeight: 700 }}
-                            />
-                            ${price.toFixed(2)}
-                          </Typography>
+                        {price && (
+                          <Chip
+                            label={`$${price.toFixed(2)}`}
+                            size="small"
+                            color="success"
+                            sx={{ fontSize: '0.65rem', height: 20 }}
+                          />
                         )}
                       </Box>
                     </CardContent>
@@ -433,48 +424,46 @@ export default function CardBrowser() {
         )}
       </Container>
 
-      {/* ====== PAGINATION (middle-left & middle-right) ====== */}
-      {!isLoading && !error && displayedCards.length > 0 && (
-        <>
-          <IconButton
-            onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-            disabled={currentPage === 1}
-            sx={{
-              position: 'fixed',
-              top: '50%',
-              left: 16,
-              transform: 'translateY(-50%)',
-              backgroundColor: 'primary.main',
-              color: 'white',
-              '&:hover': { backgroundColor: 'primary.dark' },
-              '&:disabled': { backgroundColor: 'rgba(25,118,210,0.5)' },
-              zIndex: 1000,
-            }}
-          >
-            <NavigateBefore />
-          </IconButton>
+    {/* ====== PAGINATION (middle-left & middle-right) ====== */}
+    {!isLoading && !error && displayedCards.length > 0 && (
+      <>
+        <IconButton
+          onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+          disabled={currentPage === 1}
+          sx={{
+            position: 'fixed',
+            top: '50%',
+            left: 16,
+            transform: 'translateY(-50%)',
+            backgroundColor: '#c22e28',
+            color: 'white',
+            '&:hover': { backgroundColor: '#8b1f1c' },
+            '&:disabled': { backgroundColor: 'rgba(194,46,40,0.5)' },
+            zIndex: 1000,
+          }}
+        >
+          <NavigateBefore />
+        </IconButton>
 
-          <IconButton
-            onClick={() =>
-              setCurrentPage((p) => Math.min(p + 1, totalPages))
-            }
-            disabled={currentPage === totalPages}
-            sx={{
-              position: 'fixed',
-              top: '50%',
-              right: 16,
-              transform: 'translateY(-50%)',
-              backgroundColor: 'primary.main',
-              color: 'white',
-              '&:hover': { backgroundColor: 'primary.dark' },
-              '&:disabled': { backgroundColor: 'rgba(25,118,210,0.5)' },
-              zIndex: 1000,
-            }}
-          >
-            <NavigateNext />
-          </IconButton>
-        </>
-      )}
+        <IconButton
+          onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+          disabled={currentPage === totalPages}
+          sx={{
+            position: 'fixed',
+            top: '50%',
+            right: 16,
+            transform: 'translateY(-50%)',
+            backgroundColor: '#c22e28',
+            color: 'white',
+            '&:hover': { backgroundColor: '#8b1f1c' },
+            '&:disabled': { backgroundColor: 'rgba(194,46,40,0.5)' },
+            zIndex: 1000,
+          }}
+        >
+      <NavigateNext />
+    </IconButton>
+  </>
+)}
 
       {/* ====== PAGE INDICATOR ====== */}
       {!isLoading && !error && displayedCards.length > 0 && (
@@ -497,178 +486,316 @@ export default function CardBrowser() {
         </Box>
       )}
 
-      {/* ====== CARD DETAIL DIALOG ====== */}
-      <Dialog open={modalOpen} onClose={closeModal} maxWidth="sm" fullWidth>
+      {/* ====== CARD DETAIL DIALOG (restyled) ====== */}
+      <Dialog
+        open={modalOpen}
+        onClose={closeModal}
+        maxWidth="md"
+        fullWidth
+        fullScreen={fullScreen}
+        TransitionComponent={Zoom}
+        slotProps={{
+          backdrop: {
+            sx: {
+              backdropFilter: 'blur(6px)',
+              backgroundColor: (t) => alpha(t.palette.common.black, 0.5),
+            },
+          },
+        }}
+        PaperProps={{
+          sx: {
+            overflow: 'hidden',
+            borderRadius: { xs: 0, sm: 3 },
+            boxShadow: 24,
+            // very subtle paper gradient
+            backgroundImage: (t) =>
+              `linear-gradient(180deg, ${t.palette.background.paper} 0%, ${alpha(
+                t.palette.background.paper,
+                0.9
+              )} 100%)`,
+          },
+        }}
+      >
+        {/* Title bar with soft gradient + close */}
         <DialogTitle
           sx={{
-            position: 'relative',
+            p: { xs: 2, sm: 3 },
             textAlign: 'center',
-            bgcolor: 'primary.main',
-            color: 'white',
-            fontSize: '1.25rem',
-            fontWeight: 'bold',
+            color: 'primary.contrastText',
+            fontWeight: 800,
+            letterSpacing: 0.2,
+            position: 'relative',
+            background: `linear-gradient(135deg, #c22e28 0%, #8b1f1c 100%)`,
+            // subtle shine
+            '&:after': {
+              content: '""',
+              position: 'absolute',
+              inset: 0,
+              background:
+                'linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,0))',
+              pointerEvents: 'none',
+            },
           }}
         >
           {modalCard?.name}
-          <IconButton
-            aria-label="close"
-            onClick={closeModal}
-            sx={{
-              position: 'absolute',
-              right: 8,
-              top: 8,
-              color: 'white',
-            }}
-          >
-            <Close />
-          </IconButton>
+          <Tooltip title="Close">
+            <IconButton
+              aria-label="close"
+              onClick={closeModal}
+              sx={{
+                position: 'absolute',
+                right: 8,
+                top: 8,
+                color: 'primary.contrastText',
+                bgcolor: 'rgba(255,255,255,0.12)',
+                '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' },
+              }}
+            >
+              <Close />
+            </IconButton>
+          </Tooltip>
         </DialogTitle>
-        <DialogContent dividers sx={{ p: 3 }}>
+
+        {/* Content: two-column, comfy spacing, scrollable on small screens */}
+        <DialogContent
+          dividers
+          sx={{
+            p: { xs: 2, sm: 3 },
+            bgcolor: 'transparent',
+          }}
+        >
           {modalCard && (
-            <Box>
-              {/* Large Card Image */}
-              <Box
-                component="img"
-                src={modalCard.images.large}
-                alt={modalCard.name}
-                sx={{
-                  width: '260px',
-                  height: '370px',
-                  objectFit: 'contain',
-                  mb: 3,
-                  mx: 'auto',
-                  boxShadow: 4,
-                  borderRadius: 2,
-                }}
-              />
-
-              {/* Basic Info */}
-              <Typography variant="body1" sx={{ mb: 1 }}>
-                <strong>Set:</strong> {modalCard.set.name} ({modalCard.set.series})
-              </Typography>
-              <Typography variant="body1" sx={{ mb: 1 }}>
-                <strong>Supertype:</strong> {modalCard.supertype}
-              </Typography>
-              {modalCard.subtypes?.length > 0 && (
-                <Typography variant="body1" sx={{ mb: 1 }}>
-                  <strong>Subtype:</strong> {modalCard.subtypes.join(', ')}
-                </Typography>
-              )}
-              {modalCard.hp && (
-                <Typography variant="body1" sx={{ mb: 1 }}>
-                  <strong>HP:</strong> {modalCard.hp}
-                </Typography>
-              )}
-              {modalCard.types?.length > 0 && (
-                <Box sx={{ display: 'flex', gap: 1, mb: 1 }}>
-                  {modalCard.types.map((type) => (
-                    <Chip key={type} label={type} color="secondary" />
-                  ))}
-                </Box>
-              )}
-              {modalCard.rarity && (
-                <Typography variant="body1" sx={{ mb: 1 }}>
-                  <strong>Rarity:</strong> {modalCard.rarity}
-                </Typography>
-              )}
-              {modalCard.flavorText && (
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{ fontStyle: 'italic', mb: 2 }}
+            <Grid container spacing={3} alignItems="flex-start">
+              {/* LEFT: big image with floating badges */}
+              <Grid item xs={12} md={5}>
+                <Box
+                  sx={{
+                    position: 'relative',
+                    mx: 'auto',
+                    width: { xs: 260, sm: 300 },
+                    aspectRatio: '0.7',
+                    borderRadius: 2,
+                    overflow: 'hidden',
+                    boxShadow: 6,
+                    bgcolor: 'rgba(0,0,0,0.03)',
+                  }}
                 >
-                  “{modalCard.flavorText}”
-                </Typography>
-              )}
-              <Divider sx={{ my: 2 }} />
+                  <Box
+                    component="img"
+                    src={modalCard.images.large}
+                    alt={modalCard.name}
+                    sx={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                  />
+                  {/* price + rarity chips float */}
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    sx={{ position: 'absolute', top: 8, left: 8 }}
+                  >
+                    {modalCard.rarity && (
+                      <Chip
+                        size="small"
+                        label={modalCard.rarity}
+                        sx={{
+                          bgcolor: 'background.paper',
+                          boxShadow: 2,
+                          fontWeight: 600,
+                          height: 24,
+                        }}
+                      />
+                    )}
+                    {(() => {
+                      const price =
+                        modalCard.tcgplayer?.prices?.holofoil?.market ??
+                        modalCard.tcgplayer?.prices?.normal?.market ??
+                        null;
+                      return (
+                        price && (
+                          <Chip
+                            size="small"
+                            color="success"
+                            label={`$${price.toFixed(2)}`}
+                            sx={{ boxShadow: 2, height: 24, fontWeight: 700 }}
+                          />
+                        )
+                      );
+                    })()}
+                  </Stack>
+                </Box>
+              </Grid>
 
-              {/* Attacks Section */}
-              {modalCard.attacks?.length > 0 && (
-                <Box>
-                  <Typography variant="h6" gutterBottom>
-                    Attacks
+              {/* RIGHT: details */}
+              <Grid item xs={12} md={7}>
+                <Stack spacing={1.25}>
+                  <Typography variant="overline" color="text.secondary">
+                    Overview
                   </Typography>
-                  {modalCard.attacks.map((atk, idx) => (
-                    <Box key={idx} sx={{ mb: 2 }}>
-                      <Typography variant="subtitle2">
-                        {atk.name}{' '}
-                        {atk.damage && (
-                          <Typography
-                            component="span"
-                            variant="body2"
-                            color="text.secondary"
-                          >
-                            — {atk.damage}
-                          </Typography>
-                        )}
+
+                  <Stack spacing={0.5}>
+                    <Typography variant="body1">
+                      <strong>Set:</strong> {modalCard.set.name} ({modalCard.set.series})
+                    </Typography>
+                    <Typography variant="body1">
+                      <strong>Supertype:</strong> {modalCard.supertype}
+                    </Typography>
+                    {!!modalCard.subtypes?.length && (
+                      <Typography variant="body1">
+                        <strong>Subtype:</strong> {modalCard.subtypes.join(', ')}
                       </Typography>
+                    )}
+                    {!!modalCard.hp && (
+                      <Typography variant="body1">
+                        <strong>HP:</strong> {modalCard.hp}
+                      </Typography>
+                    )}
+
+                    {!!modalCard.types?.length && (
+                      <Stack direction="row" spacing={1} sx={{ pt: 0.5, flexWrap: 'wrap' }}>
+                        {modalCard.types.map((type) => (
+                          <Chip
+                            key={type}
+                            label={type}
+                            color="secondary"
+                            variant="outlined"
+                            sx={{ height: 24, fontSize: '0.75rem' }}
+                          />
+                        ))}
+                      </Stack>
+                    )}
+
+                    {!!modalCard.flavorText && (
                       <Typography
                         variant="body2"
                         color="text.secondary"
-                        sx={{ mb: 0.5 }}
+                        sx={{
+                          fontStyle: 'italic',
+                          mt: 1,
+                          p: 1.25,
+                          bgcolor: (t) => alpha(t.palette.primary.main, 0.06),
+                          border: (t) => `1px dashed ${alpha(t.palette.primary.main, 0.25)}`,
+                          borderRadius: 1.5,
+                        }}
                       >
-                        {atk.text}
+                        “{modalCard.flavorText}”
                       </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        Cost: {atk.cost.join(', ')}
+                    )}
+                  </Stack>
+
+                  {/* Attacks */}
+                  {!!modalCard.attacks?.length && (
+                    <Box sx={{ mt: 1 }}>
+                      <Typography variant="overline" color="text.secondary">
+                        Attacks
                       </Typography>
+                      <Stack spacing={1.25} sx={{ mt: 0.5 }}>
+                        {modalCard.attacks.map((atk, idx) => (
+                          <Paper
+                            key={idx}
+                            variant="outlined"
+                            sx={{ p: 1.25, borderRadius: 1.5 }}
+                          >
+                            <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                              {atk.name}{' '}
+                              {atk.damage && (
+                                <Typography
+                                  component="span"
+                                  variant="body2"
+                                  color="text.secondary"
+                                >
+                                  — {atk.damage}
+                                </Typography>
+                              )}
+                            </Typography>
+                            {!!atk.text && (
+                              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                                {atk.text}
+                              </Typography>
+                            )}
+                            {!!atk.cost?.length && (
+                              <Typography variant="caption" color="text.secondary">
+                                Cost: {atk.cost.join(', ')}
+                              </Typography>
+                            )}
+                          </Paper>
+                        ))}
+                      </Stack>
                     </Box>
-                  ))}
-                </Box>
-              )}
+                  )}
 
-              {/* Abilities Section */}
-              {modalCard.abilities?.length > 0 && (
-                <Box sx={{ mt: 3 }}>
-                  <Typography variant="h6" gutterBottom>
-                    Abilities
-                  </Typography>
-                  {modalCard.abilities.map((ab, idx) => (
-                    <Box key={idx} sx={{ mb: 2 }}>
-                      <Typography variant="subtitle2">{ab.name}</Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {ab.text}
+                  {/* Abilities */}
+                  {!!modalCard.abilities?.length && (
+                    <Box sx={{ mt: 1 }}>
+                      <Typography variant="overline" color="text.secondary">
+                        Abilities
                       </Typography>
+                      <Stack spacing={1.25} sx={{ mt: 0.5 }}>
+                        {modalCard.abilities.map((ab, idx) => (
+                          <Paper key={idx} variant="outlined" sx={{ p: 1.25, borderRadius: 1.5 }}>
+                            <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                              {ab.name}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              {ab.text}
+                            </Typography>
+                          </Paper>
+                        ))}
+                      </Stack>
                     </Box>
-                  ))}
-                </Box>
-              )}
+                  )}
 
-              {/* Weaknesses / Resistances */}
-              <Box
-                sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}
-              >
-                {modalCard.weaknesses && (
-                  <Typography variant="body2">
-                    <strong>Weaknesses:</strong>{' '}
-                    {modalCard.weaknesses
-                      .map((w) => `${w.type} ×${w.value}`)
-                      .join(', ')}
-                  </Typography>
-                )}
-                {modalCard.resistances && (
-                  <Typography variant="body2">
-                    <strong>Resistances:</strong>{' '}
-                    {modalCard.resistances
-                      .map((r) => `${r.type} ×${r.value}`)
-                      .join(', ')}
-                  </Typography>
-                )}
-              </Box>
-
-              {/* Retreat Cost */}
-              {modalCard.retreatCost?.length > 0 && (
-                <Box sx={{ mt: 2 }}>
-                  <Typography variant="body2">
-                    <strong>Retreat Cost:</strong> {modalCard.retreatCost.join(', ')}
-                  </Typography>
-                </Box>
-              )}
-            </Box>
+                  {/* Weak/Resist/Retreat */}
+                  {(modalCard.weaknesses || modalCard.resistances || modalCard.retreatCost) && (
+                    <Paper
+                      variant="outlined"
+                      sx={{ p: 1.25, borderRadius: 1.5, mt: 1 }}
+                    >
+                      <Stack spacing={0.5}>
+                        {!!modalCard.weaknesses && (
+                          <Typography variant="body2">
+                            <strong>Weaknesses:</strong>{' '}
+                            {modalCard.weaknesses.map((w) => `${w.type} ×${w.value}`).join(', ')}
+                          </Typography>
+                        )}
+                        {!!modalCard.resistances && (
+                          <Typography variant="body2">
+                            <strong>Resistances:</strong>{' '}
+                            {modalCard.resistances.map((r) => `${r.type} ×${r.value}`).join(', ')}
+                          </Typography>
+                        )}
+                        {!!modalCard.retreatCost?.length && (
+                          <Typography variant="body2">
+                            <strong>Retreat Cost:</strong> {modalCard.retreatCost.join(', ')}
+                          </Typography>
+                        )}
+                      </Stack>
+                    </Paper>
+                  )}
+                </Stack>
+              </Grid>
+            </Grid>
           )}
         </DialogContent>
-        <DialogActions sx={{ justifyContent: 'center', p: 2 }}>
-          <Button onClick={closeModal} variant="contained" color="primary">
+
+        {/* Sticky actions with glass effect */}
+        <DialogActions
+          sx={{
+            position: { xs: 'static', md: 'sticky' },
+            bottom: 0,
+            zIndex: 1,
+            p: { xs: 2, sm: 2.5 },
+            justifyContent: 'center',
+            background: (t) =>
+              `linear-gradient(180deg, ${alpha(t.palette.background.paper, 0.6)} 0%, ${t.palette.background.paper} 60%)`,
+            backdropFilter: 'blur(6px)',
+            borderTop: (t) => `1px solid ${alpha(t.palette.divider, 0.8)}`,
+          }}
+        >
+          <Button
+            onClick={closeModal}
+            variant="contained"
+            size="large"
+            sx={{ bgcolor: '#c22e28', '&:hover': { bgcolor: '#8b1f1c' } }}
+          >
             Close
           </Button>
         </DialogActions>
