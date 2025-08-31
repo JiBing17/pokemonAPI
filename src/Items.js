@@ -299,28 +299,6 @@ export default function Items() {
                   }}
                   onClick={() => handleCardClick(item)}
                 >
-                  {/* Favorite Heart */}
-                  <IconButton
-                    onClick={e => {
-                      e.stopPropagation();
-                      toggleFavorite(item.name);
-                    }}
-                    sx={{
-                      position: 'absolute',
-                      top: 4,
-                      right: 4,
-                      zIndex: 1,
-                      color: favorites[item.name]
-                        ? 'red'
-                        : 'rgba(0,0,0,0.4)',
-                    }}
-                  >
-                    {favorites[item.name] ? (
-                      <Favorite />
-                    ) : (
-                      <FavoriteBorder />
-                    )}
-                  </IconButton>
 
                   {/* Item Sprite */}
                   <CardMedia
